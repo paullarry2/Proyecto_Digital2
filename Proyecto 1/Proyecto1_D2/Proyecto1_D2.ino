@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <TM4C123GH6PM.h>
+//#include <graficos.c>
+
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -29,7 +31,15 @@
 #define LCD_RS PD_2
 #define LCD_WR PD_3
 #define LCD_RD PE_1
+
+extern uint8_t pastel []; 
+extern uint8_t grama []; 
+extern uint8_t dino []; 
+extern uint8_t nube []; 
+
+
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};  
+int i = 0;
 //***************************************************************************************************************************************
 // Functions Prototypes
 //***************************************************************************************************************************************
@@ -57,10 +67,11 @@ void setup() {
   Serial.println("Inicio");
   LCD_Init();
   LCD_Clear(0x00);
+
   
   //FillRect(0, 0, 319, 239, 0x421b);
   FillRect(0, 0, 319, 223, 0xffff);
-  String text1 = "Dino B-day Party!";
+  String text1 = "Dino B-Day Party!";
   LCD_Print(text1, 20, 100, 2, 0x0000, 0xffff);
 //LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int columns, int index, char flip, char offset);
     
@@ -70,85 +81,28 @@ void setup() {
     LCD_Bitmap(x,224, 16, 16, grama);
     x += 15;
   }
-
-
-  
-//  for(int x = 0; x <319; x++){
-//    LCD_Bitmap(x, 52, 16, 16, tile2);
-//    LCD_Bitmap(x, 68, 16, 16, tile);
-//    
-//    LCD_Bitmap(x, 207, 16, 16, tile);
-//    LCD_Bitmap(x, 223, 16, 16, tile);
-//    x += 15;
-// }
   
 }
 //***************************************************************************************************************************************
 // Loop Infinito
 //***************************************************************************************************************************************
 void loop() {
+     i++;
+      delay(80);
+      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);
 
-  for (int i = 0; i<320-31; i++){
-      int anim = (i/35)%2;
-  LCD_Sprite(0, 180, 31, 42, dino, 2 , anim, 0, 0);
-  };
-  
-  for (int i = 0; i<320-31; i++){
-      int anim = (i/35)%2;
-  LCD_Sprite(288, 180, 31, 42, dino, 2 , anim, 1, 0);
-  };
-  
-//  for(int x = 0; x <320-32; x++){
-//    delay(15);
-//    int anim2 = (x/35)%2;
-//    
-//    LCD_Sprite(x,100,16,24,planta,2,anim2,0,1);
-//    V_line( x -1, 100, 24, 0x421b);
-//    
-//    //LCD_Bitmap(x, 100, 32, 32, prueba);
-//    
-//    int anim = (x/11)%8;
-//    
-//
-//    int anim3 = (x/11)%4;
-//    
-//    LCD_Sprite(x, 20, 16, 32, mario,8, anim,1, 0);
-//    V_line( x -1, 20, 32, 0x421b);
-// 
-//    //LCD_Sprite(x,100,32,32,bowser,4,anim3,0,1);
-//    //V_line( x -1, 100, 32, 0x421b);
-// 
-// 
-//    LCD_Sprite(x, 140, 16, 16, enemy,2, anim2,1, 0);
-//    V_line( x -1, 140, 16, 0x421b);
-//  
-//    LCD_Sprite(x, 175, 16, 32, luigi,8, anim,1, 0);
-//    V_line( x -1, 175, 32, 0x421b);
-//
-//    LCD_Sprite(144, 150, 16, 20, pastel, 2, anim, 1,0);
-//    V_line( x -1, 175, 32, 0x421b);
-//  }
-//  for(int x = 320-32; x >0; x--){
-//    delay(5);
-//    int anim = (x/11)%8;
-//    int anim2 = (x/11)%2;
-//    
-//    LCD_Sprite(x,100,16,24,planta,2,anim2,0,0);
-//    V_line( x + 16, 100, 24, 0x421b);
-    
-    //LCD_Bitmap(x, 100, 32, 32, prueba);
-    
-    //LCD_Sprite(x, 140, 16, 16, enemy,2, anim2,0, 0);
-    //V_line( x + 16, 140, 16, 0x421b);
-    
-    //LCD_Sprite(x, 175, 16, 32, luigi,8, anim,0, 0);
-    //V_line( x + 16, 175, 32, 0x421b);
+      LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
+      V_line (i-1, 40, 50, 0xffff);
+      
+      delay(80);
+      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);
 
-    //LCD_Sprite(x, 20, 16, 32, mario,8, anim,0, 0);
-    //V_line( x + 16, 20, 32, 0x421b);
-//  } 
-
-
+      if (i == 320){
+        i =0;
+      }
+      
 }
 //***************************************************************************************************************************************
 // Función para inicializar LCD
