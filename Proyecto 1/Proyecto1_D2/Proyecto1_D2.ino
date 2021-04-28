@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <TM4C123GH6PM.h>
+//#include <graficos.c>
+
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
@@ -29,6 +31,13 @@
 #define LCD_RS PD_2
 #define LCD_WR PD_3
 #define LCD_RD PE_1
+
+extern uint8_t pastel []; 
+extern uint8_t grama []; 
+extern uint8_t dino []; 
+extern uint8_t nube []; 
+
+
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};  
 //***************************************************************************************************************************************
 // Functions Prototypes
@@ -60,7 +69,7 @@ void setup() {
   
   //FillRect(0, 0, 319, 239, 0x421b);
   FillRect(0, 0, 319, 223, 0xffff);
-  String text1 = "Dino B-day Party!";
+  String text1 = "Dino B-Day Party!";
   LCD_Print(text1, 20, 100, 2, 0x0000, 0xffff);
 //LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int columns, int index, char flip, char offset);
     
@@ -88,15 +97,16 @@ void setup() {
 //***************************************************************************************************************************************
 void loop() {
 
-  for (int i = 0; i<320-31; i++){
+  for (int i = 0; i<380; i++){
       int anim = (i/35)%2;
-  LCD_Sprite(0, 180, 31, 42, dino, 2 , anim, 0, 0);
+      LCD_Sprite(0, 180, 31, 42, dino, 2 , anim, 0, 0);
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , anim, 1, 0);
+
+      LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
+      V_line (i-1, 40, 50, 0xffff);
+      delay(80);
   };
   
-  for (int i = 0; i<320-31; i++){
-      int anim = (i/35)%2;
-  LCD_Sprite(288, 180, 31, 42, dino, 2 , anim, 1, 0);
-  };
   
 //  for(int x = 0; x <320-32; x++){
 //    delay(15);
