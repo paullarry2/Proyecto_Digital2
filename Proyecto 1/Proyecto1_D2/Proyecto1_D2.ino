@@ -61,6 +61,8 @@ int s2 = 0;
 
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};  
 int i = 0;
+int rx = 160;
+int gx = 160;
 //***************************************************************************************************************************************
 // Functions Prototypes
 //***************************************************************************************************************************************
@@ -135,11 +137,48 @@ void loop() {
       
       i++;
 
-      
-
      if (i == 320){
         i =0; 
      }
+
+//****************************************************Pastel y globo moviendose  
+     LCD_Bitmap(rx,201, 18, 22, pastel);
+     rx = rx - 7; 
+     V_line (rx+32,202, 18, 0xffff);
+     V_line (rx+31,202, 18, 0xffff);
+     V_line (rx+30,202, 18, 0xffff);
+     V_line (rx+29,202, 18, 0xffff);
+     V_line (rx+28,202, 18, 0xffff);
+     V_line (rx+27,202, 18, 0xffff);
+     V_line (rx+26,202, 18, 0xffff);
+     V_line (rx+25,202, 18, 0xffff);
+
+     if (rx <= 0){
+        rx = 160; 
+     } 
+
+     LCD_Sprite(gx, 150, 12, 40, globo, 3, 0, 0, 0);
+
+     gx = gx + 7; 
+
+     V_line (gx-16,150, 40, 0xffff);
+     V_line (gx-15,150, 40, 0xffff);
+     V_line (gx-14,150, 40, 0xffff);
+     V_line (gx-13,150, 40, 0xffff);
+     V_line (gx-12,150, 40, 0xffff);
+     V_line (gx-11,150, 40, 0xffff);
+     V_line (gx-10,150, 40, 0xffff);
+     V_line (gx-9,150, 40, 0xffff);
+     V_line (gx-8,150, 40, 0xffff);
+   
+     if (gx >= 320){
+        gx = 160; 
+     } 
+
+//     delay(5);
+//     LCD_Sprite(gx, 150, 12, 40, globo, 3, 1, 0, 0);
+
+//**************************************************************************************
 
      if (d1_s){ // Comparación que ejecuta el saltio del jugador 1
         s++;
