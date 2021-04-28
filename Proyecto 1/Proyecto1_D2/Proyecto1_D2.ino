@@ -89,8 +89,8 @@ void setup() {
 void loop() {
      i++;
       delay(80);
-      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);
-      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);
+      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);    //Dinosaurio 2
 
       LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
       V_line (i-1, 40, 50, 0xffff);
