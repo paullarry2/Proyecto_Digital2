@@ -79,6 +79,8 @@ void setup() {
   SysCtlClockSet(SYSCTL_SYSDIV_2_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
   Serial.begin(9600);
   GPIOPadConfigSet(GPIO_PORTB_BASE, 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPU);
+  pinMode(jump1, INPUT_PULLUP);
+  pinMode(jump2, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(jump1), flag_d1s, FALLING);
   attachInterrupt(digitalPinToInterrupt(jump2), flag_d2s, FALLING);
   Serial.println("Inicio");
@@ -104,7 +106,8 @@ void setup() {
 // Loop Infinito
 //***************************************************************************************************************************************
 void loop() {
-     i++;
+     if (d1_s == 0 and d2_s == 0){
+      i++;
       delay(80);
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
       LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);    //Dinosaurio 2
@@ -123,16 +126,28 @@ void loop() {
       if (i == 320){
         i =0;
       }
-
-//      if (d1_s){
-//        s++;
-//        LCD_Sprite(0, 180+s, 31, 42, dino, 2 , 0, 0, 0);
-//        V_line(0,180+(s-1)),31,42,0xffff);
-//        delay(5)
-//        if (s == 25){
-//          
-//        }
-//      }
+     }
+     
+     if (d1_s){
+        s++;
+        if (s<25){
+        LCD_Sprite(0, 180-s, 31, 42, dino, 2 , 0, 0, 0);
+        H_line(180-(s-1),31,42,0xffff);
+        }
+        else if (s == 25){
+          LCD_Sprite(0, 180-25, 31, 42, dino, 2 , 0, 0, 0);
+        }
+        else if (s>25 and s<50){
+          LCD_Sprite(0, 180-25+(s-25), 31, 42, dino, 2 , 0, 0, 0);
+          H_line(180-25+((s+1)-25)),31,42,0xffff);
+        }
+        else if (s == 50){
+          s = 0;
+          d1_s = 0;
+        }
+        delay(30);
+        LCD_Sprite(0, 180+s, 31, 42, dino, 2 , 1, 0, 0);
+     }
 }
 //***************************************************************************************************************************************
 // Función para inicializar LCD
@@ -468,6 +483,7 @@ void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int 
 
 void flag_d1s(){
   d1_s = !d1_s;
+  digitalWrite(BLUE_LED, HIGH);
   delay(50);
   }
 
