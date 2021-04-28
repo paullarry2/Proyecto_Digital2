@@ -112,16 +112,20 @@ void loop() {
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
       LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);    //Dinosaurio 2
 
+      LCD_Sprite(200, 192, 45, 31, dino_agachado,  2 , 0, 1, 0);    //Dinosaurio 2 agachado
+
       LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
       V_line (i-1, 40, 50, 0xffff);
 
       LCD_Bitmap(40, 204, 18, 19, regalo);
-      LCD_Bitmap(80,205, 14, 18, pastel);
-      LCD_Sprite(260, 158, 12, 40, globo, 3, 0, 0, 0);
+      LCD_Bitmap(80,201, 18, 22, pastel);
+      LCD_Sprite(260, 150, 12, 40, globo, 3, 0, 0, 0); //Globo
       
       delay(80);
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
       LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);
+
+      LCD_Sprite(200, 192, 45, 31, dino_agachado, 2 , 1, 1, 0);    //Dinosaurio 2 agachado
 
       if (i == 320){
         i =0;
