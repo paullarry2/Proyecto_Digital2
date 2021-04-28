@@ -32,10 +32,19 @@
 #define LCD_WR PD_3
 #define LCD_RD PE_1
 
+#define jump1 PUSH1
+#define jump2 PUSH2
+
 extern uint8_t pastel []; 
 extern uint8_t grama []; 
 extern uint8_t dino []; 
 extern uint8_t nube []; 
+
+volatile int d1_s;
+volatile int d2_s;
+
+int s = 0;
+
 
 
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};  
@@ -57,6 +66,9 @@ void LCD_Print(String text, int x, int y, int fontSize, int color, int backgroun
 void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]);
 void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int columns, int index, char flip, char offset);
 
+void flag_d1s();
+void flag_d2s();
+
 //***************************************************************************************************************************************
 // Inicialización
 //***************************************************************************************************************************************
@@ -64,6 +76,8 @@ void setup() {
   SysCtlClockSet(SYSCTL_SYSDIV_2_5|SYSCTL_USE_PLL|SYSCTL_OSC_MAIN|SYSCTL_XTAL_16MHZ);
   Serial.begin(9600);
   GPIOPadConfigSet(GPIO_PORTB_BASE, 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPU);
+  attachInterrupt(digitalPinToInterrupt(jump1), flag_d1s, FALLING);
+  attachInterrupt(digitalPinToInterrupt(jump2), flag_d2s, FALLING);
   Serial.println("Inicio");
   LCD_Init();
   LCD_Clear(0x00);
@@ -102,7 +116,16 @@ void loop() {
       if (i == 320){
         i =0;
       }
-      
+
+      if (d1_s){
+        s++;
+        LCD_Sprite(0, 180+s, 31, 42, dino, 2 , 0, 0, 0);
+        v_line(0,180+(s-1)),31,42,0xffff);
+        delay(5)
+        if (s == 25){
+          
+        }
+      }
 }
 //***************************************************************************************************************************************
 // Función para inicializar LCD
@@ -430,3 +453,18 @@ void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int 
     }
   digitalWrite(LCD_CS, HIGH);
 }
+
+
+//***************************************************************************************************************************************
+// Función Interrupciones 
+//***************************************************************************************************************************************
+
+void flag_d1s(){
+  d1_s = !d1_s;
+  delay(50);
+  }
+
+void flag_d2s(){
+  d2_s = !d2_s;
+  delay(50);
+  }
