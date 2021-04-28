@@ -1,4 +1,13 @@
 
+
+
+#include "wiring_private.h"
+#include "inc/hw_ints.h"
+#include "driverlib/interrupt.h"
+#include "driverlib/rom.h"
+#include "driverlib/timer.h"
+#include "driverlib/sysctl.h"
+
 // Banco de notas
 
 #define NOTE_B0  31
@@ -39,6 +48,7 @@
 #define NOTE_AS3 233
 #define NOTE_B3  247
 #define NOTE_C4  262
+#define NOTE_C4_1 260
 #define NOTE_CS4 277
 #define NOTE_D4  294
 #define NOTE_DS4 311
@@ -93,6 +103,13 @@
 #define REST      0
 
 
+//Variables control
+int m = 0;
+int quarter = 0;
+int half = 0;
+int one = 0;
+
+
 // Velocidad a la que se reproduce la nota.
 int tempo = 200;
 
@@ -102,61 +119,109 @@ int tempo = 200;
 // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
 // !!negative numbers are used to represent dotted notes,
 // so -4 means a dotted quarter note, that is, a quarter plus an eighteenth!!
+// notes in the melody:
 int melody[] = {
-
-  // Happy Birthday
-  // Score available at https://musescore.com/user/8221/scores/26906
-
-  NOTE_C4,4, NOTE_C4,8, 
-  NOTE_D4,-4, NOTE_C4,-4, NOTE_F4,-4,
-  NOTE_E4,-2, NOTE_C4,4, NOTE_C4,8, 
-  NOTE_D4,-4, NOTE_C4,-4, NOTE_G4,-4,
-  NOTE_F4,-2, NOTE_C4,4, NOTE_C4,8,
-
-  NOTE_C5,-4, NOTE_A4,-4, NOTE_F4,-4, 
-  NOTE_E4,-4, NOTE_D4,-4, NOTE_AS4,4, NOTE_AS4,8,
-  NOTE_A4,-4, NOTE_F4,-4, NOTE_G4,-4,
-  NOTE_F4,-2,
- 
-};
+   NOTE_C4_1,NOTE_C4, NOTE_D4, NOTE_C4,NOTE_F4,NOTE_E4,
+   NOTE_C4_1,NOTE_C4,NOTE_D4,NOTE_C4,NOTE_G4,NOTE_F4,
+   NOTE_C4_1,NOTE_C4,NOTE_C5,NOTE_A4,NOTE_F4,NOTE_F4, NOTE_E4,NOTE_D4,
+   NOTE_AS4,NOTE_AS4,NOTE_A4,NOTE_F4,NOTE_G4,NOTE_F4};
+   
+// note durations: 4 = quarter note, 8 = eighth note, etc.:
+int noteDurations[] = {
+  4, 4, 2, 2,2,1,
+  4, 4, 2, 2,2,1,
+  4, 4, 2, 2,4,4,2,1, 
+  4, 4, 2, 2,2,1
+  };
 
 // sizeof gives the number of bytes, each int value is composed of two bytes (16 bits)
 // there are two values per note (pitch and duration), so for each note there are four bytes
 int notes = sizeof(melody) / sizeof(melody[0]) / 2;
 
-// this calculates the duration of a whole note in ms
-int wholenote = (60000 * 4) / tempo;
 
-int divider = 0, noteDuration = 0;
 
 void setup() {
   // iterate over the notes of the melody.
   // Remember, the array is twice the number of notes (notes + durations)
   pinMode(buzzer, OUTPUT);
-  for (int thisNote = 0; thisNote < notes * 2; thisNote = thisNote + 2) {
+  configureTimer1A(); // llamado a configuración del timer.
+  Serial.begin(115200);
 
-    // calculates the duration of each note
-    divider = melody[thisNote + 1];
-    if (divider > 0) {
-      // regular note, just proceed
-      noteDuration = (wholenote) / divider;
-    } else if (divider < 0) {
-      // dotted notes are represented with negative durations!!
-      noteDuration = (wholenote) / abs(divider);
-      noteDuration *= 1.5; // increases the duration in half for dotted notes
-    }
-
-    // we only play the note for 90% of the duration, leaving 10% as a pause
-    tone(buzzer, melody[thisNote], noteDuration * 0.9);
-
-    // Wait for the specief duration before playing the next note.
-    delay(noteDuration);
-
-    // stop the waveform generation before the next note.
-    noTone(buzzer);
-  }
 }
 
 void loop() {
   // no need to repeat the melody.
+}
+
+void configureTimer1A(){
+  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1); // Enable Timer 1 Clock
+  ROM_IntMasterEnable(); // Enable Interrupts
+  ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC); // Configure Timer Operation as Periodic
+  
+  // Configure Timer Frequencia
+  // Si se quiere una frecuencia de 1 kHz, el CustomValue debe ser 80000: 80MHz/80k = 1 kHz
+  ROM_TimerLoadSet(TIMER1_BASE, TIMER_A,11999400); // En esta configuración estoy creando una interrupción de 6.67hz, usare 125m
+  // EL objetivo es tener una interrupción cada una octava es decir 1000/ 8 = 125ms, para que la interrupcion reproduzca octava cada vez que se active. 
+  TimerIntRegister(TIMER1_BASE, TIMER_A, &Timer1AHandler);
+  ROM_IntEnable(INT_TIMER1A);  // Enable Timer 1A Interrupt
+  
+  ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT); // Timer 1A Interrupt when Timeout
+  ROM_TimerEnable(TIMER1_BASE, TIMER_A); // Start Timer 1A
+}
+
+
+void Timer1AHandler(void){
+
+int duracion = 1000/noteDurations[m];
+Serial.print(duracion);
+if (duracion == 125){
+  tone(buzzer, melody[m], 150);
+  delay(noteDuration);
+  noTone(buzzer);
+  m++;
+  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
+}
+else if (duracion == 250){
+  quarter++;
+  Serial.print(quarter);
+  if (quarter == 2){
+    quarter = 0;
+    m++;
+  }
+  tone(buzzer, melody[m], 150);
+  noTone(buzzer);
+  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
+}
+
+else if (duracion == 500){
+
+  half++;
+  if (half == 4){
+    half = 0;
+    m++;
+  }
+  tone(buzzer, melody[m], 150);
+  delay(noteDuration);
+  noTone(buzzer);
+  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
+
+}
+else if (duracion == 1000){
+
+  one++;
+  if (one == 8){
+    one = 0;
+    m++; 
+  }
+  tone(buzzer, melody[m], 150);
+  delay(noteDuration);
+  noTone(buzzer);
+  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
+}
+
+else if (m<=26){
+  m=0;
+  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
+}
+  
 }

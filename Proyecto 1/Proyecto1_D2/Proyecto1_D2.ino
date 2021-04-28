@@ -117,6 +117,8 @@ void loop() {
       LCD_Sprite(260, 158, 12, 40, globo, 3, 0, 0, 0);
       i++;
 
+      
+
       if (i == 320){
         i =0; 
      }
@@ -138,6 +140,7 @@ void loop() {
           s = 0;
           d1_s = 0;
         }
+
      }  
      else if (d2_s == 0){
       delay(80);
