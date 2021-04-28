@@ -94,7 +94,7 @@
 
 
 // Velocidad a la que se reproduce la nota.
-int tempo = 140;
+int tempo = 200;
 
 // Pin de salida que usaremos para el buzzer
   int buzzer = 40;
