@@ -43,10 +43,13 @@ extern uint8_t dino_agachado [];
 extern uint8_t globo [];
 extern uint8_t regalo [];
 
-volatile int d1_s;
-volatile int d2_s;
+volatile int d1_s = 0;
+volatile int d2_s = 0;
+volatile int lastd1_s = !d1_s;
+volatile int lastd2_s = !d2_s;
 
 int s = 0;
+int s2 = 0; 
 
 
 
@@ -106,49 +109,83 @@ void setup() {
 // Loop Infinito
 //***************************************************************************************************************************************
 void loop() {
-     if (d1_s == 0 and d2_s == 0){
-      i++;
-      delay(80);
-      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
-      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);    //Dinosaurio 2
 
       LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
       V_line (i-1, 40, 50, 0xffff);
-
       LCD_Bitmap(40, 204, 18, 19, regalo);
       LCD_Bitmap(80,205, 14, 18, pastel);
       LCD_Sprite(260, 158, 12, 40, globo, 3, 0, 0, 0);
-      
-      delay(80);
-      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
-      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);
+      i++;
 
       if (i == 320){
-        i =0;
-      }
+        i =0; 
      }
-     
+//     if (d1_s == 0 and d2_s == 0){
+//      delay(80);
+////      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
+//      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);    //Dinosaurio 2
+//
+//      LCD_Bitmap(40, 204, 18, 19, regalo);
+//      LCD_Bitmap(80,205, 14, 18, pastel);
+//      LCD_Sprite(260, 158, 12, 40, globo, 3, 0, 0, 0);
+//      
+//      delay(80);
+////      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
+//      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);
+//     }
+
      if (d1_s){
         s++;
         if (s<25){
         LCD_Sprite(0, 180-s, 31, 42, dino, 2 , 0, 0, 0);
-        H_line(180-(s-1),31,42,0xffff);
         }
         else if (s == 25){
           LCD_Sprite(0, 180-25, 31, 42, dino, 2 , 0, 0, 0);
         }
         else if (s>25 and s<50){
           LCD_Sprite(0, 180-25+(s-25), 31, 42, dino, 2 , 0, 0, 0);
-          H_line(180-25+((s+1)-26),31,42,0xffff);
+          H_line(0,180-25+((s)-26),31,0xffff);
+
         }
         else if (s == 50){
           s = 0;
           d1_s = 0;
-          H_line(180-1,31,42,0xffff);
         }
-        }
-        delay(10);
+     }  
+     else if (d2_s == 0){
+      delay(80);
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);      //Dinosaurio 2
+      delay(80);
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);
      }
+     
+
+  if (d2_s){
+        s2++;
+        if (s2<25){
+        LCD_Sprite(288, 180-s2, 31, 42, dino, 2 , 0, 1, 0);
+        }
+        else if (s2 == 25){
+          LCD_Sprite(288, 180-25, 31, 42, dino, 2 , 0, 1, 0);
+        }
+        else if (s2>25 and s2<50){
+          LCD_Sprite(288, 180-25+(s2-25), 31, 42, dino, 2 , 0, 1, 0);
+          H_line(288,180-25+((s2)-26),31,0xffff);
+
+        }
+        else if (s2 == 50){
+          s2 = 0;
+          d2_s = 0;
+        }
+      }
+     else if (d1_s == 0){
+      delay(80);
+      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
+      delay(80);
+      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
+     }
+     
+}
 //***************************************************************************************************************************************
 // Función para inicializar LCD
 //***************************************************************************************************************************************
@@ -482,12 +519,17 @@ void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int 
 //***************************************************************************************************************************************
 
 void flag_d1s(){
+  if (lastd1_s != d1_s){
   d1_s = !d1_s;
-  digitalWrite(BLUE_LED, HIGH);
+  lastd1_s = d1_s;
   delay(50);
+  }
   }
 
 void flag_d2s(){
+  if (lastd2_s != d2_s){
   d2_s = !d2_s;
+  lastd2_s = d2_s;
   delay(50);
   }
+}
