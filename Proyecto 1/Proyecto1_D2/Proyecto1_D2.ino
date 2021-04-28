@@ -34,6 +34,8 @@
 
 #define jump1 PUSH1
 #define jump2 PUSH2
+#define duck1 PA_3 //12
+#define duck2 PA_4 //13
 
 extern uint8_t pastel []; 
 extern uint8_t grama []; 
@@ -45,8 +47,12 @@ extern uint8_t regalo [];
 
 volatile int d1_s = 0;
 volatile int d2_s = 0;
+volatile int d1_d = 1;
+volatile int d2_d = 0;
 volatile int lastd1_s = !d1_s;
 volatile int lastd2_s = !d2_s;
+volatile int lastd1_d = !d1_d;
+volatile int lastd2_d = !d2_d;
 
 int s = 0;
 int s2 = 0; 
@@ -74,6 +80,8 @@ void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int 
 
 void flag_d1s();
 void flag_d2s();
+void flag_d1d();
+void flag_d2d();
 
 //***************************************************************************************************************************************
 // Inicialización
@@ -84,8 +92,12 @@ void setup() {
   GPIOPadConfigSet(GPIO_PORTB_BASE, 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPU);
   pinMode(jump1, INPUT_PULLUP);
   pinMode(jump2, INPUT_PULLUP);
+  pinMode(duck1, INPUT);
+  pinMode(duck2, INPUT);
   attachInterrupt(digitalPinToInterrupt(jump1), flag_d1s, FALLING);
   attachInterrupt(digitalPinToInterrupt(jump2), flag_d2s, FALLING);
+  attachInterrupt(digitalPinToInterrupt(duck1), flag_d1d, FALLING);
+  attachInterrupt(digitalPinToInterrupt(duck2), flag_d2d, FALLING);
   Serial.println("Inicio");
   LCD_Init();
   LCD_Clear(0x00);
@@ -115,11 +127,17 @@ void loop() {
       LCD_Bitmap(40, 204, 18, 19, regalo);
       LCD_Bitmap(80,201, 18, 22, pastel);
       LCD_Sprite(260, 150, 12, 40, globo, 3, 0, 0, 0);
+//
+//      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0); 
+//      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0); 
+//      LCD_Sprite(0,180,45,31, dino_agachado,2,0,0,0);
+//      LCD_Sprite(288,180,45,31, dino_agachado,2,0,1,0);
+      
       i++;
 
       
 
-      if (i == 320){
+     if (i == 320){
         i =0; 
      }
 
@@ -142,7 +160,7 @@ void loop() {
         }
 
      }  
-     else if (d2_s == 0){
+     else if (d2_s == 0 and d2_d == 0){
       delay(80);
       LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);      //Imprimo el Dinosaurio 2 si no esta activado
       delay(80);
@@ -168,12 +186,20 @@ void loop() {
           d2_s = 0;
         }
       }
-     else if (d1_s == 0){
+     else if (d1_s == 0 and d1_d == 0){
       delay(80);
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
       delay(80);
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0); // Sprite del 1 si no esta presionado.
      }
+
+   if (d1_d){
+    LCD_Sprite(0,180+11,45,31, dino_agachado,2,0,0,0);
+    for(int dow = 0; dow <= 11; dow++){
+    H_line(288,180+11-dow,45,0x421b);
+    }
+   }
+
      
 }
 //***************************************************************************************************************************************
@@ -520,6 +546,24 @@ void flag_d2s(){
   if (lastd2_s != d2_s){
   d2_s = !d2_s;
   lastd2_s = d2_s;
+  delay(50);
+  }
+}
+
+
+void flag_d1d(){
+  if (lastd1_d != d1_d){
+  d1_d = !d1_d;
+  lastd1_d = d1_d;
+  delay(50);
+  }
+}
+
+
+void flag_d2d(){
+  if (lastd2_d != d2_d){
+  d2_d = !d2_d;
+  lastd2_d = d2_d;
   delay(50);
   }
 }

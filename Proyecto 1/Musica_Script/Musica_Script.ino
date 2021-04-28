@@ -1,6 +1,5 @@
 
 
-
 #include "wiring_private.h"
 #include "inc/hw_ints.h"
 #include "driverlib/interrupt.h"
@@ -144,83 +143,22 @@ void setup() {
   // iterate over the notes of the melody.
   // Remember, the array is twice the number of notes (notes + durations)
   pinMode(buzzer, OUTPUT);
-  configureTimer1A(); // llamado a configuración del timer.
   Serial.begin(115200);
 
 }
 
 void loop() {
-  // no need to repeat the melody.
-  Serial.print("Holi");
-  delay(1000);
-}
+  for (int m = 0; m < 26; m++) {
 
-void configureTimer1A(){
-  ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_TIMER1); // Enable Timer 1 Clock
-  ROM_IntMasterEnable(); // Enable Interrupts
-  ROM_TimerConfigure(TIMER1_BASE, TIMER_CFG_PERIODIC); // Configure Timer Operation as Periodic
-  
-  // Configure Timer Frequencia
-  // Si se quiere una frecuencia de 1 kHz, el CustomValue debe ser 80000: 80MHz/80k = 1 kHz
-  ROM_TimerLoadSet(TIMER1_BASE, TIMER_A,11999400); // En esta configuración estoy creando una interrupción de 6.67hz, usare 125m
-  // EL objetivo es tener una interrupción cada una octava es decir 1000/ 8 = 125ms, para que la interrupcion reproduzca octava cada vez que se active. 
-  TimerIntRegister(TIMER1_BASE, TIMER_A, &Timer1AHandler);
-  ROM_IntEnable(INT_TIMER1A);  // Enable Timer 1A Interrupt
-  
-  ROM_TimerIntEnable(TIMER1_BASE, TIMER_TIMA_TIMEOUT); // Timer 1A Interrupt when Timeout
-  ROM_TimerEnable(TIMER1_BASE, TIMER_A); // Start Timer 1A
-}
+    // to calculate the note duration, take one second 
+    // divided by the note type.
+    //e.g. quarter note = 1000 / 4, eighth note = 1000/8, etc.
+    int noteDuration = 1000/noteDurations[m];
+    tone(buzzer, melody[m],noteDuration);
 
-
-void Timer1AHandler(void){
-
-int duracion = 1000/noteDurations[m];
-Serial.print(duracion);
-if (duracion == 125){
-  tone(buzzer, melody[m], 150);
-  noTone(buzzer);
-  m++;
-  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
-}
-else if (duracion == 250){
-  quarter++;
-  Serial.print(quarter);
-  if (quarter == 2){
-    quarter = 0;
-    m++;
+    int pauseBetweenNotes = noteDuration + 50;      //delay between pulse
+    delay(pauseBetweenNotes);
+    
+    noTone(buzzer);                // stop the tone playing
   }
-  tone(buzzer, melody[m], 150);
-  noTone(buzzer);
-  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
-}
-
-else if (duracion == 500){
-
-  half++;
-  if (half == 4){
-    half = 0;
-    m++;
-  }
-  tone(buzzer, melody[m], 150);
-  noTone(buzzer);
-  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
-
-}
-else if (duracion == 1000){
-
-  one++;
-  if (one == 8){
-    one = 0;
-    m++; 
-  }
-  tone(buzzer, melody[m], 150);
-  noTone(buzzer);
-  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
-}
-
-else if (m <26){
-  m=0;
-  ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
-}
-  
 }
