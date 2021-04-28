@@ -120,47 +120,34 @@ void loop() {
       if (i == 320){
         i =0; 
      }
-//     if (d1_s == 0 and d2_s == 0){
-//      delay(80);
-////      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
-//      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);    //Dinosaurio 2
-//
-//      LCD_Bitmap(40, 204, 18, 19, regalo);
-//      LCD_Bitmap(80,205, 14, 18, pastel);
-//      LCD_Sprite(260, 158, 12, 40, globo, 3, 0, 0, 0);
-//      
-//      delay(80);
-////      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
-//      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);
-//     }
 
-     if (d1_s){
+     if (d1_s){ // Comparación que ejecuta el saltio del jugador 1
         s++;
         if (s<25){
         LCD_Sprite(0, 180-s, 31, 42, dino, 2 , 0, 0, 0);
         }
         else if (s == 25){
-          LCD_Sprite(0, 180-25, 31, 42, dino, 2 , 0, 0, 0);
+          LCD_Sprite(0, 180-25, 31, 42, dino, 2 , 0, 0, 0);  //Salto del dinosaurio 1
         }
         else if (s>25 and s<50){
           LCD_Sprite(0, 180-25+(s-25), 31, 42, dino, 2 , 0, 0, 0);
           H_line(0,180-25+((s)-26),31,0xffff);
 
         }
-        else if (s == 50){
+        else if (s == 50){  //al terminar el salto Bajo bandera de salto y reinicio variables
           s = 0;
           d1_s = 0;
         }
      }  
      else if (d2_s == 0){
       delay(80);
-      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);      //Dinosaurio 2
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);      //Imprimo el Dinosaurio 2 si no esta activado
       delay(80);
-      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);      // Imprimo la animación del dino 2
      }
      
 
-  if (d2_s){
+  if (d2_s){  // Chequeo bandera de rutina salto
         s2++;
         if (s2<25){
         LCD_Sprite(288, 180-s2, 31, 42, dino, 2 , 0, 1, 0);
@@ -173,7 +160,7 @@ void loop() {
           H_line(288,180-25+((s2)-26),31,0xffff);
 
         }
-        else if (s2 == 50){
+        else if (s2 == 50){ // apago bandera rutina y reinicio variable
           s2 = 0;
           d2_s = 0;
         }
@@ -182,7 +169,7 @@ void loop() {
       delay(80);
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
       delay(80);
-      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
+      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0); // Sprite del 1 si no esta presionado.
      }
      
 }
