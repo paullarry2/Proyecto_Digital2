@@ -112,20 +112,16 @@ void loop() {
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
       LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);    //Dinosaurio 2
 
-      LCD_Sprite(200, 192, 45, 31, dino_agachado,  2 , 0, 1, 0);    //Dinosaurio 2 agachado
-
       LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
       V_line (i-1, 40, 50, 0xffff);
 
       LCD_Bitmap(40, 204, 18, 19, regalo);
-      LCD_Bitmap(80,201, 18, 22, pastel);
-      LCD_Sprite(260, 150, 12, 40, globo, 3, 0, 0, 0); //Globo
+      LCD_Bitmap(80,205, 14, 18, pastel);
+      LCD_Sprite(260, 158, 12, 40, globo, 3, 0, 0, 0);
       
       delay(80);
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
       LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);
-
-      LCD_Sprite(200, 192, 45, 31, dino_agachado, 2 , 1, 1, 0);    //Dinosaurio 2 agachado
 
       if (i == 320){
         i =0;
@@ -143,16 +139,16 @@ void loop() {
         }
         else if (s>25 and s<50){
           LCD_Sprite(0, 180-25+(s-25), 31, 42, dino, 2 , 0, 0, 0);
-          H_line(180-25+((s+1)-25)),31,42,0xffff);
+          H_line(180-25+((s+1)-26),31,42,0xffff);
         }
         else if (s == 50){
           s = 0;
           d1_s = 0;
+          H_line(180-1,31,42,0xffff);
         }
-        delay(30);
-        LCD_Sprite(0, 180+s, 31, 42, dino, 2 , 1, 0, 0);
+        }
+        delay(10);
      }
-}
 //***************************************************************************************************************************************
 // Función para inicializar LCD
 //***************************************************************************************************************************************
