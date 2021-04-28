@@ -39,6 +39,9 @@ extern uint8_t pastel [];
 extern uint8_t grama []; 
 extern uint8_t dino []; 
 extern uint8_t nube []; 
+extern uint8_t dino_agachado [];
+extern uint8_t globo [];
+extern uint8_t regalo [];
 
 volatile int d1_s;
 volatile int d2_s;
@@ -108,6 +111,10 @@ void loop() {
 
       LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
       V_line (i-1, 40, 50, 0xffff);
+
+      LCD_Bitmap(40, 204, 18, 19, regalo);
+      LCD_Bitmap(80,205, 14, 18, pastel);
+      LCD_Sprite(260, 158, 12, 40, globo, 3, 0, 0, 0);
       
       delay(80);
       LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0);
@@ -117,15 +124,15 @@ void loop() {
         i =0;
       }
 
-      if (d1_s){
-        s++;
-        LCD_Sprite(0, 180+s, 31, 42, dino, 2 , 0, 0, 0);
-        v_line(0,180+(s-1)),31,42,0xffff);
-        delay(5)
-        if (s == 25){
-          
-        }
-      }
+//      if (d1_s){
+//        s++;
+//        LCD_Sprite(0, 180+s, 31, 42, dino, 2 , 0, 0, 0);
+//        V_line(0,180+(s-1)),31,42,0xffff);
+//        delay(5)
+//        if (s == 25){
+//          
+//        }
+//      }
 }
 //***************************************************************************************************************************************
 // Función para inicializar LCD
