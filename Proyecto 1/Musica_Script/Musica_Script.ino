@@ -114,7 +114,7 @@ int one = 0;
 int tempo = 200;
 
 // Pin de salida que usaremos para el buzzer
-  int buzzer = 40;
+  int buzzer = BLUE_LED;
 // notes of the moledy followed by the duration.
 // a 4 means a quarter note, 8 an eighteenth , 16 sixteenth, so on
 // !!negative numbers are used to represent dotted notes,
@@ -151,6 +151,8 @@ void setup() {
 
 void loop() {
   // no need to repeat the melody.
+  Serial.print("Holi");
+  delay(1000);
 }
 
 void configureTimer1A(){
@@ -176,7 +178,6 @@ int duracion = 1000/noteDurations[m];
 Serial.print(duracion);
 if (duracion == 125){
   tone(buzzer, melody[m], 150);
-  delay(noteDuration);
   noTone(buzzer);
   m++;
   ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
@@ -201,7 +202,6 @@ else if (duracion == 500){
     m++;
   }
   tone(buzzer, melody[m], 150);
-  delay(noteDuration);
   noTone(buzzer);
   ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
 
@@ -214,12 +214,11 @@ else if (duracion == 1000){
     m++; 
   }
   tone(buzzer, melody[m], 150);
-  delay(noteDuration);
   noTone(buzzer);
   ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
 }
 
-else if (m<=26){
+else if (m <26){
   m=0;
   ROM_TimerIntClear(TIMER1_BASE, TIMER_A);
 }
