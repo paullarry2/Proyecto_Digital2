@@ -33,9 +33,9 @@
 #define LCD_RD PE_1
 
 #define jump1 PUSH1
-#define jump2 PUSH2
-#define duck1 PA_3 //12
-#define duck2 PA_4 //13
+#define duck1  PUSH2
+#define jump2 PE_3 //12
+#define duck2 PE_2 //13
 
 extern uint8_t pastel []; 
 extern uint8_t grama []; 
@@ -57,6 +57,7 @@ volatile int lastd2_d = !d2_d;
 int s = 0;
 int s2 = 0; 
 int contsalto= 0;
+int contsalto2 = 0;
 int agache_activo = 0;
 int agache_activo2 = 0;
 
@@ -99,10 +100,10 @@ void setup() {
   pinMode(jump2, INPUT_PULLUP);
   pinMode(duck1, INPUT);
   pinMode(duck2, INPUT);
-  attachInterrupt(digitalPinToInterrupt(duck1), flag_d1s, FALLING);
-  attachInterrupt(digitalPinToInterrupt(duck2), flag_d2s, FALLING);
-  attachInterrupt(digitalPinToInterrupt(jump1), flag_d1d_r, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(jump2), flag_d2d_r, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(jump1), flag_d1s, FALLING);
+  attachInterrupt(digitalPinToInterrupt(jump2), flag_d2s, FALLING);
+//  attachInterrupt(digitalPinToInterrupt(duck1), flag_d1d_r, CHANGE);
+//  attachInterrupt(digitalPinToInterrupt(duck2), flag_d2d_r, CHANGE);
   Serial.println("Inicio");
   LCD_Init();
   LCD_Clear(0x00);
@@ -205,17 +206,17 @@ void loop() {
         }
 
      }  
-     else if (digitalRead(jump1) == HIGH and d1_s == 0){
-//      delay(5);
+     else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 0){
+
       LCD_Sprite(0, 180, 31, 42, dino, 2 , anim, 0, 0);      //Dinosaurio 1
-//      delay(5);
-//      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0); // Sprite del 1 si no esta presionado.
+
      }
      
 
     if (d2_s){  // Chequeo bandera de rutina salto
         delay(5);
-        s2 = s2 + 5;
+        contsalto2++;
+        s2 = (contsalto2) %51;
         if (s2<25){
         LCD_Sprite(288, 180-s2, 31, 42, dino, 2 , 0, 1, 0);
         }
@@ -228,25 +229,21 @@ void loop() {
 
         }
         else if (s2 == 50){ // apago bandera rutina y reinicio variable
-          s2 = 0;
           d2_s = 0;
         }
       }
-     else if (digitalRead(jump2) == HIGH and d2_s == 0){
-//      delay(5);
+     else if (digitalRead(duck2) == HIGH and d2_s == LOW and agache_activo2 == 0){
       LCD_Sprite(288, 180, 31, 42, dino, 2 , anim, 1, 0);      //Dinosaurio 2
-//      delay(5);
-//      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0); // Sprite del 2 si no esta presionado.
      }
 
-    if (digitalRead(jump1) == LOW){
+    if (digitalRead(duck1) == LOW){
       LCD_Sprite(0,180+11,45,31, dino_agachado,2,anim,0,0);
         for(int dow = 0; dow <= 11; dow++){
         H_line(0,180+11-dow,45,0xffff);
         }
       agache_activo = 1;
    }
-   else if (digitalRead(jump1) == HIGH and agache_activo == 1){
+   else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 1){
     V_line(46-1,180+11,31,0xffff);
     V_line(46-2,180+11,31,0xffff);
     V_line(46-3,180+11,31,0xffff);
@@ -266,14 +263,14 @@ void loop() {
     agache_activo = 0;
     }
 
-   if (digitalRead(jump2) == LOW){
+   if (digitalRead(duck2) == LOW ){
       LCD_Sprite(275,180+11,45,31, dino_agachado,2,anim,1,0);
         for(int dow = 0; dow <= 11; dow++){
         H_line(288,180+11-dow,45,0xffff);
         }
       agache_activo2 = 1;
    }
-   else if (digitalRead(jump2) == HIGH and agache_activo2 == 1){
+   else if (digitalRead(duck2) == HIGH and d2_s == LOW and agache_activo2 == 1){
     V_line(275+1,180+11,31,0xffff);
     V_line(275+2,180+11,31,0xffff);
     V_line(275+3,180+11,31,0xffff);
@@ -588,29 +585,29 @@ void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int
 //***************************************************************************************************************************************
 // Leer archivos de la SD x, y, base, altura, archivo txt []
 //***************************************************************************************************************************************
-void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]){  
-  LCD_CMD(0x02c); // write_memory_start
-  digitalWrite(LCD_RS, HIGH);
-  digitalWrite(LCD_CS, LOW); 
-  
-  unsigned int x2, y2;
-  x2 = x+width;
-  y2 = y+height;
-  SetWindows(x, y, x2-1, y2-1);
-  unsigned int k = 0;
-  unsigned int i, j;
-
-  for (int i = 0; i < width; i++) {
-    for (int j = 0; j < height; j++) {
-      LCD_DATA(bitmap[k]);    //Ir mandando cada dato
-      LCD_DATA(bitmap[k+1]);  //Segundos 8 bits
-      //funcion para leer los datos, los mando, lo guardo en la misma variable y lo vuelvo a mandar
-      //LCD_DATA(bitmap[k]);    
-      k = k + 2;
-     } 
-  }
-  digitalWrite(LCD_CS, HIGH);
-}
+//void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]){  
+//  LCD_CMD(0x02c); // write_memory_start
+//  digitalWrite(LCD_RS, HIGH);
+//  digitalWrite(LCD_CS, LOW); 
+//  
+//  unsigned int x2, y2;
+//  x2 = x+width;
+//  y2 = y+height;
+//  SetWindows(x, y, x2-1, y2-1);
+//  unsigned int k = 0;
+//  unsigned int i, j;
+//
+//  for (int i = 0; i < width; i++) {
+//    for (int j = 0; j < height; j++) {
+//      LCD_DATA(bitmap[k]);    //Ir mandando cada dato
+//      LCD_DATA(bitmap[k+1]);  //Segundos 8 bits
+//      //funcion para leer los datos, los mando, lo guardo en la misma variable y lo vuelvo a mandar
+//      //LCD_DATA(bitmap[k]);    
+//      k = k + 2;
+//     } 
+//  }
+//  digitalWrite(LCD_CS, HIGH);
+//}
 
 //***************************************************************************************************************************************
 // Función para dibujar una imagen sprite - los parámetros columns = número de imagenes en el sprite, index = cual desplegar, flip = darle vuelta
@@ -673,18 +670,18 @@ void flag_d2s(){
 }
 
 
-void flag_d1d_r(){
-  if (lastd1_d != d1_d){
-  d1_d = !d1_d;
-  lastd1_d = d1_d;
-  delay(50);
-  }
-}
-
-void flag_d2d_r(){
-  if (lastd2_d != d2_d){
-  d2_d = !d2_d;
-  lastd2_d = d2_d;
-  delay(50);
-  }
-  }
+//void flag_d1d_r(){
+//  if (lastd1_d != d1_d){
+//  d1_d = !d1_d;
+//  lastd1_d = d1_d;
+//  delay(50);
+//  }
+//}
+//
+//void flag_d2d_r(){
+//  if (lastd2_d != d2_d){
+//  d2_d = !d2_d;
+//  lastd2_d = d2_d;
+//  delay(50);
+//  }
+//  }
