@@ -57,7 +57,7 @@ volatile int lastd2_d = !d2_d;
 int s = 0;
 int s2 = 0; 
 int contsalto= 0;
-
+int agache_activo = 0;
 
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};  
 int i = 0;
@@ -83,8 +83,9 @@ void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int 
 
 void flag_d1s();
 void flag_d2s();
-void flag_d1d();
-void flag_d2d();
+void flag_d1d_r();
+void flag_d2d_f();
+void flag_d2d_r();
 
 //***************************************************************************************************************************************
 // Inicialización
@@ -97,10 +98,10 @@ void setup() {
   pinMode(jump2, INPUT_PULLUP);
   pinMode(duck1, INPUT);
   pinMode(duck2, INPUT);
-  attachInterrupt(digitalPinToInterrupt(jump1), flag_d1s, FALLING);
+  attachInterrupt(digitalPinToInterrupt(duck1), flag_d1s, FALLING);
   attachInterrupt(digitalPinToInterrupt(jump2), flag_d2s, FALLING);
-  attachInterrupt(digitalPinToInterrupt(duck1), flag_d1d, FALLING);
-  attachInterrupt(digitalPinToInterrupt(duck2), flag_d2d, FALLING);
+  attachInterrupt(digitalPinToInterrupt(jump1), flag_d1d_r, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(duck2), flag_d2d_r, CHANGE);
   Serial.println("Inicio");
   LCD_Init();
   LCD_Clear(0x00);
@@ -185,7 +186,7 @@ void loop() {
         if (s<25){
         LCD_Sprite(0, 180-s, 31, 42, dino, 2 , 0, 0, 0);
         for (int sub1 = 0; sub1 < 6; sub1++ ){
-        H_line(0,(180+42)-s+5-sub1,31,0xffff);
+        H_line(0,(180+42)-s-sub1,31,0xffff);
         }
         }
         else if (s == 25){
@@ -236,16 +237,23 @@ void loop() {
 //      delay(5);
 //      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0); // Sprite del 2 si no esta presionado.
      }
-//
-//   if (d1_d){
-//    LCD_Sprite(0,180+11,45,31, dino_agachado,2,0,0,0);
-//    for(int dow = 0; dow <= 11; dow++){
-//    H_line(288,180+11-dow,45,0x421b);
-//    }
-//   }
-
-     
+    if (d1_d == 1){
+      LCD_Sprite(0,180+11,45,31, dino_agachado,2,anim,0,0);
+        for(int dow = 0; dow <= 11; dow++){
+        H_line(0,180+11-dow,45,0xffff);
+        }
+      agache_activo = 1;
+   }
+   else if (d1_d == 0 and agache_activo == 1){
+    FillRect(145, 145, 5,5, 0x412b);
+    for(int res = 0; res == 14; res++){
+    V_line(45-res,180+11,45,0x421b);
+    }
+    agache_activo = 0;
+    
+    }
 }
+
 //***************************************************************************************************************************************
 // Función para inicializar LCD
 //***************************************************************************************************************************************
@@ -595,7 +603,7 @@ void flag_d2s(){
 }
 
 
-void flag_d1d(){
+void flag_d1d_r(){
   if (lastd1_d != d1_d){
   d1_d = !d1_d;
   lastd1_d = d1_d;
@@ -603,11 +611,10 @@ void flag_d1d(){
   }
 }
 
-
-void flag_d2d(){
+void flag_d2d_r(){
   if (lastd2_d != d2_d){
   d2_d = !d2_d;
   lastd2_d = d2_d;
   delay(50);
   }
-}
+  }
