@@ -145,6 +145,8 @@ void loop() {
 //****************************************************Pastel y globo moviendose  
      LCD_Bitmap(rx,201, 18, 22, pastel);
      rx = rx - 1; 
+     V_line (rx+34,202, 18, 0xffff);
+     V_line (rx+33,202, 18, 0xffff);     
      V_line (rx+32,202, 18, 0xffff);
 //     V_line (rx+31,202, 18, 0xffff);
 //     V_line (rx+30,202, 18, 0xffff);
@@ -158,19 +160,17 @@ void loop() {
         rx = 160; 
      } 
 
-     LCD_Sprite(gx, 150, 12, 40, globo, 3, 0, 0, 0);
+     LCD_Sprite(gx, 150, 12, 40, globo, 3, 0, 0, 0); // Globo
 
      gx = gx + 1; 
-
-     V_line (gx-16,150, 40, 0xffff);
-//     V_line (gx-15,150, 40, 0xffff);
-//     V_line (gx-14,150, 40, 0xffff);
-//     V_line (gx-13,150, 40, 0xffff);
-//     V_line (gx-12,150, 40, 0xffff);
-//     V_line (gx-11,150, 40, 0xffff);
-//     V_line (gx-10,150, 40, 0xffff);
-//     V_line (gx-9,150, 40, 0xffff);
-//     V_line (gx-8,150, 40, 0xffff);
+     V_line (gx-10,150, 40, 0xffff);
+     V_line (gx-9,150, 40, 0xffff);
+     V_line (gx-8,150, 40, 0xffff);
+     V_line (gx-7,150, 40, 0xffff);
+     V_line (gx-6,150, 40, 0xffff);
+     V_line (gx-5,150, 40, 0xffff);
+     V_line (gx-4,150, 40, 0xffff);
+     V_line (gx-3,150, 40, 0xffff);
    
      if (gx >= 320){
         gx = 160; 
