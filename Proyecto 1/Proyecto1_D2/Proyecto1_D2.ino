@@ -47,7 +47,7 @@ extern uint8_t regalo [];
 
 volatile int d1_s = 0;
 volatile int d2_s = 0;
-volatile int d1_d = 1;
+volatile int d1_d = 0;
 volatile int d2_d = 0;
 volatile int lastd1_s = !d1_s;
 volatile int lastd2_s = !d2_s;
@@ -56,13 +56,14 @@ volatile int lastd2_d = !d2_d;
 
 int s = 0;
 int s2 = 0; 
-
+int contsalto= 0;
 
 
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};  
 int i = 0;
 int rx = 160;
 int gx = 160;
+int conta = 0;
 //***************************************************************************************************************************************
 // Functions Prototypes
 //***************************************************************************************************************************************
@@ -124,34 +125,31 @@ void setup() {
 //***************************************************************************************************************************************
 void loop() {
 
-      LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
-      V_line (i-1, 40, 50, 0xffff);
-      LCD_Bitmap(40, 204, 18, 19, regalo);
-      LCD_Bitmap(80,201, 18, 22, pastel);
-      LCD_Sprite(260, 150, 12, 40, globo, 3, 0, 0, 0);
+//      LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
+//      V_line (i-1, 40, 50, 0xffff);
+//      LCD_Bitmap(40, 204, 18, 19, regalo);
+//      LCD_Bitmap(80,201, 18, 22, pastel);
+//      LCD_Sprite(260, 150, 12, 40, globo, 3, 0, 0, 0);
 //
 //      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0); 
 //      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0); 
 //      LCD_Sprite(0,180,45,31, dino_agachado,2,0,0,0);
 //      LCD_Sprite(288,180,45,31, dino_agachado,2,0,1,0);
       
-      i++;
-
-     if (i == 320){
-        i =0; 
-     }
+      conta++;
+     int anim = (conta/11) % 2;
 
 //****************************************************Pastel y globo moviendose  
      LCD_Bitmap(rx,201, 18, 22, pastel);
-     rx = rx - 7; 
+     rx = rx - 1; 
      V_line (rx+32,202, 18, 0xffff);
-     V_line (rx+31,202, 18, 0xffff);
-     V_line (rx+30,202, 18, 0xffff);
-     V_line (rx+29,202, 18, 0xffff);
-     V_line (rx+28,202, 18, 0xffff);
-     V_line (rx+27,202, 18, 0xffff);
-     V_line (rx+26,202, 18, 0xffff);
-     V_line (rx+25,202, 18, 0xffff);
+//     V_line (rx+31,202, 18, 0xffff);
+//     V_line (rx+30,202, 18, 0xffff);
+//     V_line (rx+29,202, 18, 0xffff);
+//     V_line (rx+28,202, 18, 0xffff);
+//     V_line (rx+27,202, 18, 0xffff);
+//     V_line (rx+26,202, 18, 0xffff);
+//     V_line (rx+25,202, 18, 0xffff);
 
      if (rx <= 0){
         rx = 160; 
@@ -159,17 +157,17 @@ void loop() {
 
      LCD_Sprite(gx, 150, 12, 40, globo, 3, 0, 0, 0);
 
-     gx = gx + 7; 
+     gx = gx + 1; 
 
      V_line (gx-16,150, 40, 0xffff);
-     V_line (gx-15,150, 40, 0xffff);
-     V_line (gx-14,150, 40, 0xffff);
-     V_line (gx-13,150, 40, 0xffff);
-     V_line (gx-12,150, 40, 0xffff);
-     V_line (gx-11,150, 40, 0xffff);
-     V_line (gx-10,150, 40, 0xffff);
-     V_line (gx-9,150, 40, 0xffff);
-     V_line (gx-8,150, 40, 0xffff);
+//     V_line (gx-15,150, 40, 0xffff);
+//     V_line (gx-14,150, 40, 0xffff);
+//     V_line (gx-13,150, 40, 0xffff);
+//     V_line (gx-12,150, 40, 0xffff);
+//     V_line (gx-11,150, 40, 0xffff);
+//     V_line (gx-10,150, 40, 0xffff);
+//     V_line (gx-9,150, 40, 0xffff);
+//     V_line (gx-8,150, 40, 0xffff);
    
      if (gx >= 320){
         gx = 160; 
@@ -181,34 +179,41 @@ void loop() {
 //**************************************************************************************
 
      if (d1_s){ // Comparación que ejecuta el saltio del jugador 1
-        s++;
+        delay(5);
+        contsalto++;
+        s = (contsalto) %51;
         if (s<25){
         LCD_Sprite(0, 180-s, 31, 42, dino, 2 , 0, 0, 0);
+        for (int sub1 = 0; sub1 < 6; sub1++ ){
+        H_line(0,(180+42)-s+5-sub1,31,0xffff);
+        }
         }
         else if (s == 25){
           LCD_Sprite(0, 180-25, 31, 42, dino, 2 , 0, 0, 0);  //Salto del dinosaurio 1
         }
         else if (s>25 and s<50){
           LCD_Sprite(0, 180-25+(s-25), 31, 42, dino, 2 , 0, 0, 0);
-          H_line(0,180-25+((s)-26),31,0xffff);
+          for (int cae1 = 0; cae1 < 6; cae1++ ){
+          H_line(0,180-25+((s)-27)-cae1,31,0xffff);
+          }
 
         }
-        else if (s == 50){  //al terminar el salto Bajo bandera de salto y reinicio variables
-          s = 0;
+        else if (s >= 50){  //al terminar el salto Bajo bandera de salto y reinicio variables
           d1_s = 0;
         }
 
      }  
-     else if (d2_s == 0 and d2_d == 0){
-      delay(80);
-      LCD_Sprite(288, 180, 31, 42, dino, 2 , 0, 1, 0);      //Imprimo el Dinosaurio 2 si no esta activado
-      delay(80);
-      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0);      // Imprimo la animación del dino 2
+     else if (d1_d == 0 and d1_s == 0){
+//      delay(5);
+      LCD_Sprite(0, 180, 31, 42, dino, 2 , anim, 0, 0);      //Dinosaurio 1
+//      delay(5);
+//      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0); // Sprite del 1 si no esta presionado.
      }
      
 
   if (d2_s){  // Chequeo bandera de rutina salto
-        s2++;
+        delay(5);
+        s2 = s2 + 5;
         if (s2<25){
         LCD_Sprite(288, 180-s2, 31, 42, dino, 2 , 0, 1, 0);
         }
@@ -225,19 +230,19 @@ void loop() {
           d2_s = 0;
         }
       }
-     else if (d1_s == 0 and d1_d == 0){
-      delay(80);
-      LCD_Sprite(0, 180, 31, 42, dino, 2 , 0, 0, 0);      //Dinosaurio 1
-      delay(80);
-      LCD_Sprite(0, 180, 31, 42, dino, 2 , 1, 0, 0); // Sprite del 1 si no esta presionado.
+     else if (d2_d == 0 and d2_s == 0){
+//      delay(5);
+      LCD_Sprite(288, 180, 31, 42, dino, 2 , anim, 1, 0);      //Dinosaurio 2
+//      delay(5);
+//      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0); // Sprite del 2 si no esta presionado.
      }
-
-   if (d1_d){
-    LCD_Sprite(0,180+11,45,31, dino_agachado,2,0,0,0);
-    for(int dow = 0; dow <= 11; dow++){
-    H_line(288,180+11-dow,45,0x421b);
-    }
-   }
+//
+//   if (d1_d){
+//    LCD_Sprite(0,180+11,45,31, dino_agachado,2,0,0,0);
+//    for(int dow = 0; dow <= 11; dow++){
+//    H_line(288,180+11-dow,45,0x421b);
+//    }
+//   }
 
      
 }
