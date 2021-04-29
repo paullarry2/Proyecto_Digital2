@@ -11,6 +11,8 @@
 #include <cstdlib>
 #include <TM4C123GH6PM.h>
 //#include <graficos.c>
+#include <SPI.h>
+#include <SD.h>
 
 #include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
@@ -69,6 +71,8 @@ int i = 0;
 int rx = 160;
 int gx = 160;
 int conta = 0;
+
+File myFile;
 //***************************************************************************************************************************************
 // Functions Prototypes
 //***************************************************************************************************************************************
@@ -597,31 +601,51 @@ void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int
 
 
 //***************************************************************************************************************************************
-// Leer archivos de la SD x, y, base, altura, archivo txt []
+// Leer archivos de la SD y escribirlos x, y, base, altura, archivo txt []
 //***************************************************************************************************************************************
-//void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]){
-//  LCD_CMD(0x02c); // write_memory_start
-//  digitalWrite(LCD_RS, HIGH);
-//  digitalWrite(LCD_CS, LOW);
-//
-//  unsigned int x2, y2;
-//  x2 = x+width;
-//  y2 = y+height;
-//  SetWindows(x, y, x2-1, y2-1);
-//  unsigned int k = 0;
-//  unsigned int i, j;
-//
-//  for (int i = 0; i < width; i++) {
-//    for (int j = 0; j < height; j++) {
-//      LCD_DATA(bitmap[k]);    //Ir mandando cada dato
-//      LCD_DATA(bitmap[k+1]);  //Segundos 8 bits
-//      //funcion para leer los datos, los mando, lo guardo en la misma variable y lo vuelvo a mandar
-//      //LCD_DATA(bitmap[k]);
-//      k = k + 2;
-//     }
-//  }
-//  digitalWrite(LCD_CS, HIGH);
-//}
+void LCD_FONDO(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char pantalla_inicio[]){  
+    LCD_CMD(0x02c); // write_memory_start
+  digitalWrite(LCD_RS, HIGH);
+  digitalWrite(LCD_CS, LOW); 
+  
+  unsigned int x2, y2;
+  x2 = x+width;
+  y2 = y+height;
+  SetWindows(x, y, x2-1, y2-1);
+  unsigned int k = 0;
+  unsigned int i, j;
+
+  char data [2] = "";
+  int dataindex = 0;
+  char caracter;
+
+  myFile = SD.open("PANTAL~1.TXT");
+  if (myFile) {
+    Serial.println("PANTAL~1.TXT:");
+    // read from the file until there's nothing else in it:
+    while (myFile.available()) {
+      caracter = myFile.read();
+      if ((caracter != ',') || (caracter != ' ')){
+        data[dataindex] = caracter;
+        dataindex++;
+//         data.concat(caracter);
+      }
+      else if (caracter == ',') {
+        break;
+      }
+     //   if (caracter == ','){ //mandar data y resetear
+          uint8_t mandar_data = (uint8_t)strtol(data, NULL, 16);
+          LCD_DATA(mandar_data);
+          data[dataindex] = ' ';      
+        } //end if
+      //} //end else
+    } //end while
+  //    Serial.write(myFile.read());
+    // close the file:
+digitalWrite(LCD_CS, HIGH);
+myFile.close(); //end if myFile
+  
+} //End funcion LCD_Fondo
 
 //***************************************************************************************************************************************
 // Función para dibujar una imagen sprite - los parámetros columns = número de imagenes en el sprite, index = cual desplegar, flip = darle vuelta
