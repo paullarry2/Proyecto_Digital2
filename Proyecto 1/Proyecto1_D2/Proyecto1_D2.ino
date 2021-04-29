@@ -583,6 +583,35 @@ void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int
   }
   digitalWrite(LCD_CS, HIGH);
 }
+
+
+//***************************************************************************************************************************************
+// Leer archivos de la SD x, y, base, altura, archivo txt []
+//***************************************************************************************************************************************
+void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]){  
+  LCD_CMD(0x02c); // write_memory_start
+  digitalWrite(LCD_RS, HIGH);
+  digitalWrite(LCD_CS, LOW); 
+  
+  unsigned int x2, y2;
+  x2 = x+width;
+  y2 = y+height;
+  SetWindows(x, y, x2-1, y2-1);
+  unsigned int k = 0;
+  unsigned int i, j;
+
+  for (int i = 0; i < width; i++) {
+    for (int j = 0; j < height; j++) {
+      LCD_DATA(bitmap[k]);    //Ir mandando cada dato
+      LCD_DATA(bitmap[k+1]);  //Segundos 8 bits
+      //funcion para leer los datos, los mando, lo guardo en la misma variable y lo vuelvo a mandar
+      //LCD_DATA(bitmap[k]);    
+      k = k + 2;
+     } 
+  }
+  digitalWrite(LCD_CS, HIGH);
+}
+
 //***************************************************************************************************************************************
 // Función para dibujar una imagen sprite - los parámetros columns = número de imagenes en el sprite, index = cual desplegar, flip = darle vuelta
 //***************************************************************************************************************************************
