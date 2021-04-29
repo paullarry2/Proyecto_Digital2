@@ -58,6 +58,7 @@ int s = 0;
 int s2 = 0; 
 int contsalto= 0;
 int agache_activo = 0;
+int agache_activo2 = 0;
 
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};  
 int i = 0;
@@ -99,9 +100,9 @@ void setup() {
   pinMode(duck1, INPUT);
   pinMode(duck2, INPUT);
   attachInterrupt(digitalPinToInterrupt(duck1), flag_d1s, FALLING);
-  attachInterrupt(digitalPinToInterrupt(jump2), flag_d2s, FALLING);
+  attachInterrupt(digitalPinToInterrupt(duck2), flag_d2s, FALLING);
   attachInterrupt(digitalPinToInterrupt(jump1), flag_d1d_r, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(duck2), flag_d2d_r, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(jump2), flag_d2d_r, CHANGE);
   Serial.println("Inicio");
   LCD_Init();
   LCD_Clear(0x00);
@@ -204,7 +205,7 @@ void loop() {
         }
 
      }  
-     else if (d1_d == 0 and d1_s == 0){
+     else if (digitalRead(jump1) == HIGH and d1_s == 0){
 //      delay(5);
       LCD_Sprite(0, 180, 31, 42, dino, 2 , anim, 0, 0);      //Dinosaurio 1
 //      delay(5);
@@ -212,7 +213,7 @@ void loop() {
      }
      
 
-  if (d2_s){  // Chequeo bandera de rutina salto
+    if (d2_s){  // Chequeo bandera de rutina salto
         delay(5);
         s2 = s2 + 5;
         if (s2<25){
@@ -231,28 +232,68 @@ void loop() {
           d2_s = 0;
         }
       }
-     else if (d2_d == 0 and d2_s == 0){
+     else if (digitalRead(jump2) == HIGH and d2_s == 0){
 //      delay(5);
       LCD_Sprite(288, 180, 31, 42, dino, 2 , anim, 1, 0);      //Dinosaurio 2
 //      delay(5);
 //      LCD_Sprite(288, 180, 31, 42, dino, 2 , 1, 1, 0); // Sprite del 2 si no esta presionado.
      }
-    if (d1_d == 1){
+
+    if (digitalRead(jump1) == LOW){
       LCD_Sprite(0,180+11,45,31, dino_agachado,2,anim,0,0);
         for(int dow = 0; dow <= 11; dow++){
         H_line(0,180+11-dow,45,0xffff);
         }
       agache_activo = 1;
    }
-   else if (d1_d == 0 and agache_activo == 1){
-    FillRect(145, 145, 5,5, 0x412b);
-    for(int res = 0; res == 14; res++){
-    V_line(45-res,180+11,45,0x421b);
-    }
-    agache_activo = 0;
+   else if (digitalRead(jump1) == HIGH and agache_activo == 1){
+    V_line(46-1,180+11,31,0xffff);
+    V_line(46-2,180+11,31,0xffff);
+    V_line(46-3,180+11,31,0xffff);
+    V_line(46-4,180+11,31,0xffff);
+    V_line(46-5,180+11,31,0xffff);
+    V_line(46-6,180+11,31,0xffff);
+    V_line(46-7,180+11,31,0xffff);
+    V_line(46-8,180+11,31,0xffff);
+    V_line(46-9,180+11,31,0xffff);
+    V_line(46-10,180+11,31,0xffff);
+    V_line(46-11,180+11,31,0xffff);
+    V_line(46-12,180+11,31,0xffff);
+    V_line(46-13,180+11,31,0xffff);
+    V_line(46-14,180+11,31,0xffff);
+    V_line(46-15,180+11,31,0xffff);
     
+    agache_activo = 0;
+    }
+
+   if (digitalRead(jump2) == LOW){
+      LCD_Sprite(275,180+11,45,31, dino_agachado,2,anim,1,0);
+        for(int dow = 0; dow <= 11; dow++){
+        H_line(288,180+11-dow,45,0xffff);
+        }
+      agache_activo2 = 1;
+   }
+   else if (digitalRead(jump2) == HIGH and agache_activo2 == 1){
+    V_line(275+1,180+11,31,0xffff);
+    V_line(275+2,180+11,31,0xffff);
+    V_line(275+3,180+11,31,0xffff);
+    V_line(275+4,180+11,31,0xffff);
+    V_line(275+5,180+11,31,0xffff);
+    V_line(275+6,180+11,31,0xffff);
+    V_line(275+7,180+11,31,0xffff);
+    V_line(275+8,180+11,31,0xffff);
+    V_line(275+9,180+11,31,0xffff);
+    V_line(275+10,180+11,31,0xffff);
+    V_line(275+11,180+11,31,0xffff);
+    V_line(275+12,180+11,31,0xffff);
+    V_line(275+13,180+11,31,0xffff);
+    V_line(275+14,180+11,31,0xffff);
+    V_line(275+15,180+11,31,0xffff);
+    
+    agache_activo2 = 0;
     }
 }
+
 
 //***************************************************************************************************************************************
 // Función para inicializar LCD
