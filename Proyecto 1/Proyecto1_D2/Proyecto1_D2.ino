@@ -96,7 +96,7 @@ void V_line(unsigned int x, unsigned int y, unsigned int l, unsigned int c);
 void Rect(unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int c);
 void FillRect(unsigned int x, unsigned int y, unsigned int w, unsigned int h, unsigned int c);
 void LCD_Print(String text, int x, int y, int fontSize, int color, int background);
-
+void LCD_FONDO(unsigned int x, unsigned int y, unsigned int width, unsigned int height);
 void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]);
 void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[], int columns, int index, char flip, char offset);
 
@@ -128,7 +128,7 @@ void setup() {
 
       delay(10);
       LCD_FONDO(0, 0, 320, 240);
-      delay(20000);
+      delay(1000);
 
   //FillRect(0, 0, 319, 239, 0x421b);
   FillRect(0, 0, 319, 223, 0xffff);
