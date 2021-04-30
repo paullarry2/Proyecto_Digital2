@@ -65,12 +65,22 @@ int contsalto = 0;
 int contsalto2 = 0;
 int agache_activo = 0;
 int agache_activo2 = 0;
+int jumping = 0;
+int jumping2 = 0;
+
+int coordy1 = 0;
+int coordx1 = 0;
+int obsty = 0;
+int obstx = 0;
+int coordy2 = 0;
+int coordx2 = 0;
 
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};
 int i = 0;
 int rx = 160;
 int gx = 160;
 int conta = 0;
+int gameover1 = 0;
 
 File myFile;
 //***************************************************************************************************************************************
@@ -116,6 +126,10 @@ void setup() {
   LCD_Clear(0x00);
 
 
+      delay(10);
+      LCD_FONDO(0, 0, 320, 240);
+      delay(20000);
+
   //FillRect(0, 0, 319, 239, 0x421b);
   FillRect(0, 0, 319, 223, 0xffff);
   String text1 = "Dino B-Day Party!";
@@ -134,16 +148,19 @@ void setup() {
 // Loop Infinito
 //***************************************************************************************************************************************
 void loop() {
-
+    i = 150;
+   LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
+//   V_line (i-1, 40, 50, 0xffff);
   conta++;
   int anim = (conta / 11) % 2;
 
   //****************************************************Pastel y globo moviendose
-  if (obj_f == 0) {
-    switch (obj) {
-      case 1 :{
+//  if (obj_f == 0) {
+//    switch (obj) {
+//      case 0 :{
         LCD_Bitmap(rx, 201, 18, 22, pastel);
-
+        obstx = rx;
+        obsty = 201;
         rx = rx - 1;
         V_line (rx + 34, 202, 18, 0xffff);
         V_line (rx + 33, 202, 18, 0xffff);
@@ -161,11 +178,13 @@ void loop() {
           obj_f = 1;
           Serial.print("Bandera1");
         }
-      }
-        break;
-
-      case 0 : {
+//      }
+//        break;
+//
+//      case 1 : {
         LCD_Sprite(gx, 150, 12, 40, globo, 3, 0, 0, 0); // Globo
+//        obstx = gx;
+        obsty = 150;
         gx = gx + 1;
         V_line (gx - 10, 150, 40, 0xffff);
         V_line (gx - 9, 150, 40, 0xffff);
@@ -181,11 +200,11 @@ void loop() {
           obj_f = 1;
           Serial.print("bandera0");
         }
-      }
-        break;
+//      }
+//        break;
 
-    }
-  }
+//    }
+//  }
   else if (obj_f == 1){
     //int obj  = 2;
    obj_f = 0;
@@ -202,18 +221,22 @@ void loop() {
   if (d1_s) { // Comparación que ejecuta el saltio del jugador 1
     delay(5);
     contsalto++;
+    jumping = 1;
     s = (contsalto) % 51;
     if (s < 25) {
-      LCD_Sprite(0, 180 - s, 31, 42, dino, 2 , 0, 0, 0);
+      coordy1 = 180 -s;
+      LCD_Sprite(0, coordy1, 31, 42, dino, 2 , 0, 0, 0);
       for (int sub1 = 0; sub1 < 6; sub1++ ) {
         H_line(0, (180 + 42) - s - sub1, 31, 0xffff);
       }
     }
     else if (s == 25) {
-      LCD_Sprite(0, 180 - 25, 31, 42, dino, 2 , 0, 0, 0); //Salto del dinosaurio 1
+      coordy1 = 180-25;
+      LCD_Sprite(0,coordy1, 31, 42, dino, 2 , 0, 0, 0); //Salto del dinosaurio 1
     }
     else if (s > 25 and s < 50) {
-      LCD_Sprite(0, 180 - 25 + (s - 25), 31, 42, dino, 2 , 0, 0, 0);
+      coordy1 = 180 - 25 + (s - 25);
+      LCD_Sprite(0,coordy1 , 31, 42, dino, 2 , 0, 0, 0);
       for (int cae1 = 0; cae1 < 6; cae1++ ) {
         H_line(0, 180 - 25 + ((s) - 27) - cae1, 31, 0xffff);
       }
@@ -221,12 +244,13 @@ void loop() {
     }
     else if (s >= 50) { //al terminar el salto Bajo bandera de salto y reinicio variables
       d1_s = 0;
+      jumping = 0;
     }
 
   }
-  else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 0) {
-
-    LCD_Sprite(0, 180, 31, 42, dino, 2 , anim, 0, 0);      //Dinosaurio 1
+  else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 0 and jumping ==0) {
+    coordy1 = 180;
+    LCD_Sprite(0, coordy1, 31, 42, dino, 2 , anim, 0, 0);      //Dinosaurio 1
 
   }
 
@@ -234,28 +258,35 @@ void loop() {
   if (d2_s) { // Chequeo bandera de rutina salto
     delay(5);
     contsalto2++;
+    jumping2 = 1;
     s2 = (contsalto2) % 51;
     if (s2 < 25) {
-      LCD_Sprite(288, 180 - s2, 31, 42, dino, 2 , 0, 1, 0);
+      coordy2 = 180-s2;
+      LCD_Sprite(288, coordy2, 31, 42, dino, 2 , 0, 1, 0);
     }
     else if (s2 == 25) {
-      LCD_Sprite(288, 180 - 25, 31, 42, dino, 2 , 0, 1, 0);
+      coordy2 = 180-25;
+      LCD_Sprite(288, coordy2, 31, 42, dino, 2 , 0, 1, 0);
     }
     else if (s2 > 25 and s2 < 50) {
-      LCD_Sprite(288, 180 - 25 + (s2 - 25), 31, 42, dino, 2 , 0, 1, 0);
+      coordy2 = 180 - 25 + (s2 - 25);
+      LCD_Sprite(288, coordy2, 31, 42, dino, 2 , 0, 1, 0);
       H_line(288, 180 - 25 + ((s2) - 26), 31, 0xffff);
 
     }
     else if (s2 == 50) { // apago bandera rutina y reinicio variable
       d2_s = 0;
+      jumping2 = 0;
     }
   }
-  else if (digitalRead(duck2) == HIGH and d2_s == LOW and agache_activo2 == 0) {
+  else if (digitalRead(duck2) == HIGH and d2_s == LOW and agache_activo2 == 0 and jumping2 == 0) {
+    coordy2 = 180;
     LCD_Sprite(288, 180, 31, 42, dino, 2 , anim, 1, 0);      //Dinosaurio 2
   }
 
   if (digitalRead(duck1) == LOW) {
-    LCD_Sprite(0, 180 + 11, 45, 31, dino_agachado, 2, anim, 0, 0);
+    coordy1 = 180+11;
+    LCD_Sprite(0, coordy1, 45, 31, dino_agachado, 2, anim, 0, 0);
     for (int dow = 0; dow <= 11; dow++) {
       H_line(0, 180 + 11 - dow, 45, 0xffff);
     }
@@ -282,7 +313,8 @@ void loop() {
   }
 
   if (digitalRead(duck2) == LOW ) {
-    LCD_Sprite(275, 180 + 11, 45, 31, dino_agachado, 2, anim, 1, 0);
+    coordy2 = 180+11;
+    LCD_Sprite(275, coordy2, 45, 31, dino_agachado, 2, anim, 1, 0);
     for (int dow = 0; dow <= 11; dow++) {
       H_line(288, 180 + 11 - dow, 45, 0xffff);
     }
@@ -307,6 +339,15 @@ void loop() {
 
     agache_activo2 = 0;
   }
+
+
+int ycol1 = coordy1 + 41;
+int ycolpas = obsty + 22;
+if ((coordy1<obsty<ycol1) or (obsty<ycolpas) and gameover1 == 0 and obstx < 31){
+  Serial.println("game over 1");
+  Serial.print(obstx);
+  gameover1 = 1;
+}  
 }
 
 
@@ -603,48 +644,45 @@ void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int
 //***************************************************************************************************************************************
 // Leer archivos de la SD y escribirlos x, y, base, altura, archivo txt []
 //***************************************************************************************************************************************
-void LCD_FONDO(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char pantalla_inicio[]){  
-    LCD_CMD(0x02c); // write_memory_start
+void LCD_FONDO(unsigned int x, unsigned int y, unsigned int width, unsigned int height) {
+  LCD_CMD(0x02c); // write_memory_start
   digitalWrite(LCD_RS, HIGH);
-  digitalWrite(LCD_CS, LOW); 
-  
+  digitalWrite(LCD_CS, LOW);
+
   unsigned int x2, y2;
-  x2 = x+width;
-  y2 = y+height;
-  SetWindows(x, y, x2-1, y2-1);
+  x2 = x + width;
+  y2 = y + height;
+  SetWindows(x, y, x2 - 1, y2 - 1);
   unsigned int k = 0;
   unsigned int i, j;
 
-  char data [2] = "";
+  char data [2];
   int dataindex = 0;
   char caracter;
 
-  myFile = SD.open("PANTAL~1.TXT");
+  myFile = SD.open("PAN.txt");
   if (myFile) {
-    Serial.println("PANTAL~1.TXT:");
     // read from the file until there's nothing else in it:
     while (myFile.available()) {
       caracter = myFile.read();
-      if ((caracter != ',') || (caracter != ' ')){
+      if ((caracter != ',') || (caracter != ' ')) {
         data[dataindex] = caracter;
         dataindex++;
-//         data.concat(caracter);
+        //         data.concat(caracter);
       }
-      else if (caracter == ',') {
-        break;
-      }
-     //   if (caracter == ','){ //mandar data y resetear
-          uint8_t mandar_data = (uint8_t)strtol(data, NULL, 16);
-          LCD_DATA(mandar_data);
-          data[dataindex] = ' ';      
-        } //end if
-      //} //end else
+      else{
+      if (caracter == ',') {
+      uint8_t mandar_data = (uint8_t)strtol(data, NULL, 16);
+      LCD_DATA(mandar_data);
+      dataindex = 0;
+      }     
+      } //end else
     } //end while
-  //    Serial.write(myFile.read());
-    // close the file:
-digitalWrite(LCD_CS, HIGH);
-myFile.close(); //end if myFile
-  
+  } //end if my File
+  // close the file:
+  digitalWrite(LCD_CS, HIGH);
+  myFile.close(); //end if myFile
+
 } //End funcion LCD_Fondo
 
 //***************************************************************************************************************************************
