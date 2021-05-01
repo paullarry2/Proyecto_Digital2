@@ -126,9 +126,22 @@ void setup() {
   LCD_Clear(0x00);
 
 
-      delay(10);
-      LCD_FONDO(0, 0, 320, 240);
-      delay(1000);
+  //Memoria SD
+  SPI.setModule(0);  //iniciamos comunicacion SPI en el modulo 0
+  Serial.print("Initializing SD card...");
+  pinMode(12, OUTPUT);  //Colocamos el CS del modulo SPI-0 como Output
+  //Se verifica que se haya iniciado correctamente la SD
+  if (!SD.begin(12)) {
+    Serial.println("initialization failed!");
+    return;
+  }
+  Serial.println("initialization done.");
+  //****
+
+
+  delay(10);
+  LCD_FONDO(0, 0, 320, 240);
+  delay(500);
 
   //FillRect(0, 0, 319, 239, 0x421b);
   FillRect(0, 0, 319, 223, 0xffff);
@@ -148,16 +161,16 @@ void setup() {
 // Loop Infinito
 //***************************************************************************************************************************************
 void loop() {
-    i = 150;
-   LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0); 
-//   V_line (i-1, 40, 50, 0xffff);
+  i = 150;
+  LCD_Sprite(i, 40, 50, 17, nube, 1, 0, 0, 0);
+  //   V_line (i-1, 40, 50, 0xffff);
   conta++;
   int anim = (conta / 11) % 2;
 
   //****************************************************Pastel y globo moviendose
-//  if (obj_f == 0) {
-//    switch (obj) {
-//      case 0 :{
+  if (obj_f == 0) {
+    switch (obj) {
+      case 0 :
         LCD_Bitmap(rx, 201, 18, 22, pastel);
         obstx = rx;
         obsty = 201;
@@ -165,56 +178,54 @@ void loop() {
         V_line (rx + 34, 202, 18, 0xffff);
         V_line (rx + 33, 202, 18, 0xffff);
         V_line (rx + 32, 202, 18, 0xffff);
-             V_line (rx+31,202, 18, 0xffff);
-             V_line (rx+30,202, 18, 0xffff);
-             V_line (rx+29,202, 18, 0xffff);
-             V_line (rx+28,202, 18, 0xffff);
-             V_line (rx+27,202, 18, 0xffff);
-             V_line (rx+26,202, 18, 0xffff);
-             V_line (rx+25,202, 18, 0xffff);
+        V_line (rx + 31, 202, 18, 0xffff);
+        V_line (rx + 30, 202, 18, 0xffff);
+        V_line (rx + 29, 202, 18, 0xffff);
+        V_line (rx + 28, 202, 18, 0xffff);
+        V_line (rx + 27, 202, 18, 0xffff);
+        V_line (rx + 26, 202, 18, 0xffff);
+        V_line (rx + 25, 202, 18, 0xffff);
 
-        if (rx <= 0) {
+        if (rx == 0) {
           rx = 160;
           obj_f = 1;
-          Serial.print("Bandera1");
         }
-//      }
-//        break;
-//
-//      case 1 : {
-        LCD_Sprite(gx, 150, 12, 40, globo, 3, 0, 0, 0); // Globo
-//        obstx = gx;
-        obsty = 150;
-        gx = gx + 1;
-        V_line (gx - 10, 150, 40, 0xffff);
-        V_line (gx - 9, 150, 40, 0xffff);
-        V_line (gx - 8, 150, 40, 0xffff);
-        V_line (gx - 7, 150, 40, 0xffff);
-        V_line (gx - 6, 150, 40, 0xffff);
-        V_line (gx - 5, 150, 40, 0xffff);
-        V_line (gx - 4, 150, 40, 0xffff);
-        V_line (gx - 3, 150, 40, 0xffff);
+        break;
 
-        if (gx >= 320) {
-          gx = 160;
-          obj_f = 1;
-          Serial.print("bandera0");
-        }
-//      }
-//        break;
 
-//    }
-//  }
-  else if (obj_f == 1){
+
+      case 1 : 
+          LCD_Sprite(gx, 150, 12, 40, globo, 3, 0, 0, 0); // Globo
+          obstx = gx;
+          obsty = 150;
+          gx = gx + 1;
+          Serial.println(obstx);
+          V_line (gx - 10, 150, 40, 0xffff);
+          V_line (gx - 9, 150, 40, 0xffff);
+          V_line (gx - 8, 150, 40, 0xffff);
+          V_line (gx - 7, 150, 40, 0xffff);
+          V_line (gx - 6, 150, 40, 0xffff);
+          V_line (gx - 5, 150, 40, 0xffff);
+          V_line (gx - 4, 150, 40, 0xffff);
+          V_line (gx - 3, 150, 40, 0xffff);
+
+          if (gx == 320) {
+            gx = 160;
+            obj_f = 1;
+          }
+        break;
+    }
+  }
+  else if (obj_f == 1) {
     //int obj  = 2;
-   obj_f = 0;
-   int obj = (rand() %2);
-   Serial.println(obj);
+    obj_f = 0;
+    int obj = (rand() % 2);
+    Serial.println(obj);
     
   }
 
-  //     delay(5);
-  //     LCD_Sprite(gx, 150, 12, 40, globo, 3, 1, 0, 0);
+  delay(5);
+  LCD_Sprite(gx, 150, 12, 40, globo, 3, 1, 0, 0);
 
   //**************************************************************************************
 
@@ -224,19 +235,19 @@ void loop() {
     jumping = 1;
     s = (contsalto) % 51;
     if (s < 25) {
-      coordy1 = 180 -s;
+      coordy1 = 180 - s;
       LCD_Sprite(0, coordy1, 31, 42, dino, 2 , 0, 0, 0);
       for (int sub1 = 0; sub1 < 6; sub1++ ) {
         H_line(0, (180 + 42) - s - sub1, 31, 0xffff);
       }
     }
     else if (s == 25) {
-      coordy1 = 180-25;
-      LCD_Sprite(0,coordy1, 31, 42, dino, 2 , 0, 0, 0); //Salto del dinosaurio 1
+      coordy1 = 180 - 25;
+      LCD_Sprite(0, coordy1, 31, 42, dino, 2 , 0, 0, 0); //Salto del dinosaurio 1
     }
     else if (s > 25 and s < 50) {
       coordy1 = 180 - 25 + (s - 25);
-      LCD_Sprite(0,coordy1 , 31, 42, dino, 2 , 0, 0, 0);
+      LCD_Sprite(0, coordy1 , 31, 42, dino, 2 , 0, 0, 0);
       for (int cae1 = 0; cae1 < 6; cae1++ ) {
         H_line(0, 180 - 25 + ((s) - 27) - cae1, 31, 0xffff);
       }
@@ -248,7 +259,7 @@ void loop() {
     }
 
   }
-  else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 0 and jumping ==0) {
+  else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 0 and jumping == 0) {
     coordy1 = 180;
     LCD_Sprite(0, coordy1, 31, 42, dino, 2 , anim, 0, 0);      //Dinosaurio 1
 
@@ -261,11 +272,11 @@ void loop() {
     jumping2 = 1;
     s2 = (contsalto2) % 51;
     if (s2 < 25) {
-      coordy2 = 180-s2;
+      coordy2 = 180 - s2;
       LCD_Sprite(288, coordy2, 31, 42, dino, 2 , 0, 1, 0);
     }
     else if (s2 == 25) {
-      coordy2 = 180-25;
+      coordy2 = 180 - 25;
       LCD_Sprite(288, coordy2, 31, 42, dino, 2 , 0, 1, 0);
     }
     else if (s2 > 25 and s2 < 50) {
@@ -285,7 +296,7 @@ void loop() {
   }
 
   if (digitalRead(duck1) == LOW) {
-    coordy1 = 180+11;
+    coordy1 = 180 + 11;
     LCD_Sprite(0, coordy1, 45, 31, dino_agachado, 2, anim, 0, 0);
     for (int dow = 0; dow <= 11; dow++) {
       H_line(0, 180 + 11 - dow, 45, 0xffff);
@@ -313,7 +324,7 @@ void loop() {
   }
 
   if (digitalRead(duck2) == LOW ) {
-    coordy2 = 180+11;
+    coordy2 = 180 + 11;
     LCD_Sprite(275, coordy2, 45, 31, dino_agachado, 2, anim, 1, 0);
     for (int dow = 0; dow <= 11; dow++) {
       H_line(288, 180 + 11 - dow, 45, 0xffff);
@@ -341,13 +352,12 @@ void loop() {
   }
 
 
-int ycol1 = coordy1 + 41;
-int ycolpas = obsty + 22;
-if ((coordy1<obsty<ycol1) or (obsty<ycolpas) and gameover1 == 0 and obstx < 31){
-  Serial.println("game over 1");
-  Serial.print(obstx);
-  gameover1 = 1;
-}  
+  int ycol1 = coordy1 + 41;
+  int ycolpas = obsty + 22;
+  if ((coordy1 < obsty < ycol1) or (obsty < ycolpas) and gameover1 == 0 and obstx < 31) {
+
+    gameover1 = 1;
+  }
 }
 
 
@@ -656,7 +666,7 @@ void LCD_FONDO(unsigned int x, unsigned int y, unsigned int width, unsigned int 
   unsigned int k = 0;
   unsigned int i, j;
 
-  char data [2];
+  char data[4];
   int dataindex = 0;
   char caracter;
 
@@ -665,17 +675,20 @@ void LCD_FONDO(unsigned int x, unsigned int y, unsigned int width, unsigned int 
     // read from the file until there's nothing else in it:
     while (myFile.available()) {
       caracter = myFile.read();
-      if ((caracter != ',') || (caracter != ' ')) {
+      //Serial.println(caracter);
+      if ((caracter != ',') && (caracter != ' ')) {
         data[dataindex] = caracter;
         dataindex++;
         //         data.concat(caracter);
       }
-      else{
-      if (caracter == ',') {
-      uint8_t mandar_data = (uint8_t)strtol(data, NULL, 16);
-      LCD_DATA(mandar_data);
-      dataindex = 0;
-      }     
+      else {
+        if (caracter == ',') {
+          //Serial.println(data);
+          uint8_t mandar_data = (uint8_t)strtol(data, NULL, 16);
+          //Serial.println(mandar_data);
+          LCD_DATA(mandar_data);
+          dataindex = 0;
+        }
       } //end else
     } //end while
   } //end if my File
