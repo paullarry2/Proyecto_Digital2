@@ -59,8 +59,14 @@ volatile int lastd2_d = !d2_d;
 
 int s = 0;
 int s2 = 0;
-int obj_f = 1;
-int obj  = 0;
+int obj_f_l = 1;
+int obj_f_r = 1;
+int obj_l  = 0;
+int rx_r = 160;
+int gx_r = 160;
+int rx_l = 160;
+int gx_l = 160;
+int obj_r  = 0;
 int contsalto = 0;
 int contsalto2 = 0;
 int agache_activo = 0;
@@ -77,8 +83,6 @@ int coordx2 = 0;
 
 int DPINS[] = {PB_0, PB_1, PB_2, PB_3, PB_4, PB_5, PB_6, PB_7};
 int i = 0;
-int rx = 160;
-int gx = 160;
 int conta = 0;
 int gameover1 = 0;
 
@@ -168,84 +172,134 @@ void loop() {
   int anim = (conta / 11) % 2;
 
   //****************************************************Pastel y globo moviendose
-  if (obj_f == 0) {
-    switch (obj) {
-      case 0 :
-        LCD_Bitmap(rx, 201, 18, 22, pastel);
-        obstx = rx;
+  if (obj_f_l == 0) {
+    switch (obj_l) { //Case de los objetos generados parte izquierda
+      case 0:
+        LCD_Bitmap(rx_l, 201, 18, 22, pastel); 
+        obstx = rx_l;
         obsty = 201;
-        rx = rx - 1;
-        V_line (rx + 34, 202, 18, 0xffff);
-        V_line (rx + 33, 202, 18, 0xffff);
-        V_line (rx + 32, 202, 18, 0xffff);
-        V_line (rx + 31, 202, 18, 0xffff);
-        V_line (rx + 30, 202, 18, 0xffff);
-        V_line (rx + 29, 202, 18, 0xffff);
-        V_line (rx + 28, 202, 18, 0xffff);
-        V_line (rx + 27, 202, 18, 0xffff);
-        V_line (rx + 26, 202, 18, 0xffff);
-        V_line (rx + 25, 202, 18, 0xffff);
+        rx_l = rx_l - 1;
+        V_line (rx_l + 34, 202, 18, 0xffff);
+        V_line (rx_l + 33, 202, 18, 0xffff);
+        V_line (rx_l + 32, 202, 18, 0xffff);
+        V_line (rx_l + 31, 202, 18, 0xffff);
+        V_line (rx_l + 30, 202, 18, 0xffff);
+        V_line (rx_l + 29, 202, 18, 0xffff);
+        V_line (rx_l + 28, 202, 18, 0xffff);
+        V_line (rx_l + 27, 202, 18, 0xffff);
+        V_line (rx_l + 26, 202, 18, 0xffff);
+        V_line (rx_l + 25, 202, 18, 0xffff);
 
-        if (rx == 0) {
-          rx = 160;
-          obj_f = 1;
+        if (rx_l == 0) {
+          rx_l = 160; //Posicion inicial al cruzar limite izquierda
+          obj_f_l = 1;
+          for (int i = 0; i<18; i++){
+          V_line (i, 150, 40, 0xffff); // Borro el sprite de la ultima posiciion ya que for no borrra el ultimo traslado en gx
+        }
         }
         break;
-
-
-
-      case 1 : 
-          LCD_Sprite(gx, 150, 12, 40, globo, 3, 0, 0, 0); // Globo
-          obstx = gx;
-          obsty = 150;
-          gx = gx + 1;
-          Serial.println(obstx);
-          V_line (gx - 10, 150, 40, 0xffff);
-          V_line (gx - 9, 150, 40, 0xffff);
-          V_line (gx - 8, 150, 40, 0xffff);
-          V_line (gx - 7, 150, 40, 0xffff);
-          V_line (gx - 6, 150, 40, 0xffff);
-          V_line (gx - 5, 150, 40, 0xffff);
-          V_line (gx - 4, 150, 40, 0xffff);
-          V_line (gx - 3, 150, 40, 0xffff);
-
-          if (gx == 320) {
-            gx = 160;
-            obj_f = 1;
+      case 1 :
+        LCD_Sprite(gx_l, 150, 12, 40, globo, 3, 0, 0, 0); // Globo
+        obstx = gx_l;
+        obsty = 150;
+        gx_l = gx_l - 1;
+        for (int i=12; i<25; i++){
+          V_line (gx_l + i, 150, 40, 0xffff);
           }
+
+//        V_line (gx + 10, 150, 40, 0xffff);
+//        V_line (gx + 9, 150, 40, 0xffff);
+//        V_line (gx + 8, 150, 40, 0xffff);
+//        V_line (gx + 7, 150, 40, 0xffff);
+//        V_line (gx + 6, 150, 40, 0xffff);
+//        V_line (gx + 5, 150, 40, 0xffff);
+//        V_line (gx + 4, 150, 40, 0xffff);
+//        V_line (gx + 3, 150, 40, 0xffff);
+
+        if (gx_l == 0) {
+          gx_l = 160;
+          obj_f_l = 1;
+         for (int i = 0; i<12; i++){
+          V_line (i, 150, 40, 0xffff); // Borro el sprite de la ultima posiciion ya que for no borrra el ultimo traslado en gx
+        }
+        }
         break;
     }
   }
-  else if (obj_f == 1) {
+  else if (obj_f_l == 1) {
     //int obj  = 2;
-    obj_f = 0;
-    int obj = (rand() % 2);
-    Serial.println(obj);
-    
+    obj_f_l = 0;
+    obj_l = (rand() % 2); // Generación del numero aleatorio para el case izquierdo.
   }
 
-  delay(5);
-  LCD_Sprite(gx, 150, 12, 40, globo, 3, 1, 0, 0);
+  if (obj_f_r == 0) { // Codigo generación de obstaculos alaeatorios 
+    switch (obj_r) {
+      case 0:
+        LCD_Bitmap(rx_r, 201, 18, 22, pastel);  //Impresion de pastel en caso de tener el caso 0
+        obstx = rx_r;
+        obsty = 201;
+        rx_r = rx_r + 1;
+        V_line (rx_r - 18, 202, 18, 0xffff);
+        V_line (rx_r - 17, 202, 18, 0xffff);
+        V_line (rx_r - 16, 202, 18, 0xffff);
+        V_line (rx_r - 15, 202, 18, 0xffff);
+        V_line (rx_r - 14, 202, 18, 0xffff);
+        V_line (rx_r - 13, 202, 18, 0xffff);
+        V_line (rx_r - 12, 202, 18, 0xffff);
+        V_line (rx_r - 11, 202, 18, 0xffff);
+        V_line (rx_r - 10, 202, 18, 0xffff);
+        V_line (rx_r - 9, 202, 18, 0xffff);
+
+        if (rx_r == 320) { // Se chequea si el obstaculo ya salio de la pantalla cuando sale
+          rx_r = 160; // Reiniciamos y levantamos bandera.
+          obj_f_r = 1;
+        }
+        break;
+      case 1 :
+        LCD_Sprite(gx_r, 150, 12, 40, globo, 3, 0, 0, 0); // Globo
+        obstx = gx_r;
+        obsty = 150;
+        gx_r = gx_r + 1;
+        V_line (gx_r - 10, 150, 40, 0xffff);
+        V_line (gx_r - 9, 150, 40, 0xffff);
+        V_line (gx_r - 8, 150, 40, 0xffff);
+        V_line (gx_r - 7, 150, 40, 0xffff);
+        V_line (gx_r - 6, 150, 40, 0xffff);
+        V_line (gx_r - 5, 150, 40, 0xffff);
+        V_line (gx_r - 4, 150, 40, 0xffff);
+        V_line (gx_r - 3, 150, 40, 0xffff);
+
+        if (gx_r == 320) {
+          gx_r = 160;
+          obj_f_r = 1;
+        }
+        break;
+    }
+  }
+  else if (obj_f_r == 1) {
+    //int obj  = 2;
+    obj_f_r = 0;
+    obj_r = (rand() % 2);  // Numero aleatorio del lado derecho.
+  }
 
   //**************************************************************************************
 
   if (d1_s) { // Comparación que ejecuta el saltio del jugador 1
-    delay(5);
     contsalto++;
     jumping = 1;
-    s = (contsalto) % 51;
-    if (s < 25) {
-      coordy1 = 180 - s;
+    s = (contsalto) % 51; //variable que hace mod de 51 y se suma 1 vez cada vez que se repite el loop. numeros del 0 al 50
+    if (s < 25) { // De 0 a 25, se hara el salto para arriba, teniendo 25 como valor del salto maximo
+      coordy1 = 180 - s; // Posicion original menos s 
       LCD_Sprite(0, coordy1, 31, 42, dino, 2 , 0, 0, 0);
       for (int sub1 = 0; sub1 < 6; sub1++ ) {
-        H_line(0, (180 + 42) - s - sub1, 31, 0xffff);
+        H_line(0, (180 + 42) - s - sub1, 31, 0xffff); // for para borrar el rastro del dinosaurio por el eje y
       }
     }
-    else if (s == 25) {
+    else if (s == 25) { // Cuando s es igual a 25 el dinosaurio queda estatico en el maximo
       coordy1 = 180 - 25;
       LCD_Sprite(0, coordy1, 31, 42, dino, 2 , 0, 0, 0); //Salto del dinosaurio 1
     }
-    else if (s > 25 and s < 50) {
+    else if (s > 25 and s < 50) { // Cuando sobrepasa s el valor de s empieza a caer a la posicion original.
       coordy1 = 180 - 25 + (s - 25);
       LCD_Sprite(0, coordy1 , 31, 42, dino, 2 , 0, 0, 0);
       for (int cae1 = 0; cae1 < 6; cae1++ ) {
@@ -253,21 +307,20 @@ void loop() {
       }
 
     }
-    else if (s >= 50) { //al terminar el salto Bajo bandera de salto y reinicio variables
+    else if (s >= 50) { //al terminar el salto Bajo bandera de salto y reinicio variables 
       d1_s = 0;
       jumping = 0;
     }
 
   }
-  else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 0 and jumping == 0) {
-    coordy1 = 180;
+  else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 0 and jumping == 0) { // Esta es la posición normal, cuando nada esta presionado el codigo cae a esta zona.
+    coordy1 = 180; 
     LCD_Sprite(0, coordy1, 31, 42, dino, 2 , anim, 0, 0);      //Dinosaurio 1
-
+// El dinosaurio estara estatico, cambiando de animacion 
   }
 
 
   if (d2_s) { // Chequeo bandera de rutina salto
-    delay(5);
     contsalto2++;
     jumping2 = 1;
     s2 = (contsalto2) % 51;
@@ -304,6 +357,7 @@ void loop() {
     agache_activo = 1;
   }
   else if (digitalRead(duck1) == HIGH and d1_s == LOW and agache_activo == 1) {
+
     V_line(46 - 1, 180 + 11, 31, 0xffff);
     V_line(46 - 2, 180 + 11, 31, 0xffff);
     V_line(46 - 3, 180 + 11, 31, 0xffff);
