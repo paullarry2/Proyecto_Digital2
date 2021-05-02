@@ -730,18 +730,18 @@ void LCD_FONDO(unsigned int x, unsigned int y, unsigned int width, unsigned int 
     while (myFile.available()) {
       caracter = myFile.read();
       //Serial.println(caracter);
-      if ((caracter != ',') && (caracter != ' ')) {
-        data[dataindex] = caracter;
-        dataindex++;
+      if ((caracter != ',') && (caracter != ' ')) { //cuando el caracter que esta detectando es distinto de coma o espacio
+        data[dataindex] = caracter; //Se copian los datos en la posicion indicada (se concatenan)
+        dataindex++; //Se incrementa la posición
         //         data.concat(caracter);
       }
       else {
-        if (caracter == ',') {
+        if (caracter == ',') { //al detectar una coma
           //Serial.println(data);
-          uint8_t mandar_data = (uint8_t)strtol(data, NULL, 16);
+          uint8_t mandar_data = (uint8_t)strtol(data, NULL, 16); //convertir str a int
           //Serial.println(mandar_data);
-          LCD_DATA(mandar_data);
-          dataindex = 0;
+          LCD_DATA(mandar_data); // se manda la data
+          dataindex = 0; //se borran los datos que tenia la variable para poder copiar y mandar datos nuevos
         }
       } //end else
     } //end while
@@ -797,7 +797,7 @@ void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[], int
 //***************************************************************************************************************************************
 
 void flag_d1s() {
-  if (lastd1_s != d1_s) {
+  if (lastd1_s != d1_s) { //chequea el estado pasado. Si el estado pasado es el mismo que el que se esta leyendo, no deja pasar
     d1_s = !d1_s;
     lastd1_s = d1_s;
     delay(50);
